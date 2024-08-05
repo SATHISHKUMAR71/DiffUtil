@@ -43,21 +43,26 @@ class NotesAdapter(private var context: Context,private val viewModel: NotesAppV
                     putString("date",notesList[position].createdAt)
                     putString("content",notesList[position].content)
                 }
-
                 (context as FragmentActivity).supportFragmentManager.beginTransaction()
                     .replace(R.id.fragmentContainerView,addNoteFragment)
                     .addToBackStack("Note View")
                     .commit()
             }
+//            DELETE NOTES
             findViewById<ImageButton>(R.id.deleteBtnList).setOnClickListener {
-//                DELETE NOTES
-                viewModel.deleteNote(notesList[holder.adapterPosition])
+                val actualPos = holder.adapterPosition
+                if(actualPos != RecyclerView.NO_POSITION){
+                    val item = notesList.getOrNull(actualPos)
+                    if(item!=null){
+                        viewModel.deleteNote(notesList[actualPos])
+                    }
+                }
             }
         }
     }
 
     fun setNotes(notes:MutableList<Note>){
-        println("Set Notes Called")
+
         val diffUtil = NotesDiffUtil(notesList,notes)
         val diffResults = DiffUtil.calculateDiff(diffUtil)
         notesList.clear()

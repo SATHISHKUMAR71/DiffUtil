@@ -21,7 +21,7 @@ import java.time.format.DateTimeFormatter
 class AddNote(private var viewModel: NotesAppViewModel) : Fragment() {
 
     private var noteId=0
-    private lateinit var note: Note
+    private var note: Note? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -55,21 +55,26 @@ class AddNote(private var viewModel: NotesAppViewModel) : Fragment() {
             if(arguments==null){
                 note = Note(0,title.text.toString(),content.text.toString(),time,time,0)
 //                INSERT NOTE
-                viewModel.addNote(note)
+                note?.let {
+                    viewModel.addNote(it)
+                }
+
             }
             else{
                 note = Note(noteId,title.text.toString(),content.text.toString(),time,time,0)
 //                UPDATE NOTE
-                viewModel.updateNote(note)
+                note?.let {
+                    viewModel.updateNote(it)
+                }
             }
-            println((Note(noteId,title.text.toString(),content.text.toString(),time,time,0)).toString())
             parentFragmentManager.popBackStack()
         }
         view.findViewById<ImageButton>(R.id.deleteNote).setOnClickListener {
 //            DELETE NOTE
-            viewModel.deleteNote(note)
+            note?.let {
+                viewModel.deleteNote(it)
+            }
             parentFragmentManager.popBackStack()
-            Toast.makeText(context,"Notes Deleted Successfully",Toast.LENGTH_SHORT).show()
         }
 
         return view
