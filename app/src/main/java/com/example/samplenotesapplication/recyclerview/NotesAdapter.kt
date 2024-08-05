@@ -1,4 +1,4 @@
-package com.example.samplenotesapplication.adapter
+package com.example.samplenotesapplication.recyclerview
 
 import android.content.Context
 import android.os.Bundle
@@ -7,8 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.samplenotesapplication.R
 
@@ -52,15 +52,16 @@ class NotesAdapter(private var context: Context,private val viewModel: NotesAppV
             findViewById<ImageButton>(R.id.deleteBtnList).setOnClickListener {
 //                DELETE NOTES
                 viewModel.deleteNote(notesList[position])
-//                db.delete(notesList[position])
-//                notesList = db.readAllNotes()
+
 
             }
         }
     }
 
     fun setNotes(notes:MutableList<Note>){
+        val diffUtil = NotesDiffUtil(notesList,notes)
+        val diffResults = DiffUtil.calculateDiff(diffUtil)
         notesList = notes
-        notifyDataSetChanged()
+        diffResults.dispatchUpdatesTo(this)
     }
 }

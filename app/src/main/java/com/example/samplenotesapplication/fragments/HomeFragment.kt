@@ -11,8 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.samplenotesapplication.R
 
-import com.example.samplenotesapplication.adapter.NotesAdapter
-import com.example.samplenotesapplication.model.Note
+import com.example.samplenotesapplication.recyclerview.NotesAdapter
 import com.example.samplenotesapplication.model.NotesDatabase
 import com.example.samplenotesapplication.repository.NoteRepository
 import com.example.samplenotesapplication.viewmodel.NotesAppViewModel
