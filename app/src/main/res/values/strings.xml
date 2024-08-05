@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">SampleNotesApp</string>
+    <string name="add_new_note">Add New Note</string>
+    <string name="back_to_the_notes_app">Back to the Notes App</string>
+    <string name="save_changes_and_back_to_notes_app">Save Changes and Back to Notes app</string>
+
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title">Title</string>
+    <string name="date">date</string>
+    <string name="start_typing">Start Typing....</string>
+</resources>
