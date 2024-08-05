@@ -15,6 +15,8 @@ import com.example.samplenotesapplication.R
 import com.example.samplenotesapplication.model.Note
 import com.example.samplenotesapplication.viewmodel.NotesAppViewModel
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class AddNote(private var viewModel: NotesAppViewModel) : Fragment() {
 
@@ -35,13 +37,15 @@ class AddNote(private var viewModel: NotesAppViewModel) : Fragment() {
         val content = view.findViewById<EditText>(R.id.content)
         val date = view.findViewById<TextView>(R.id.date)
         date.text = LocalDate.now().toString()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM--dd HH:mm:ss")
+        val time = LocalDateTime.now().format(formatter)
         if(arguments!=null){
             arguments?.let {
                 title.setText(it.getString("title"))
                 content.setText(it.getString("content"))
                 date.text = (it.getString("date"))
                 noteId = it.getInt("id")
-                note = Note(noteId,title.text.toString(),content.text.toString(),LocalDate.now().toString(),LocalDate.now().toString(),0)
+                note = Note(noteId,title.text.toString(),content.text.toString(),time,time,0)
             }
         }
         view.findViewById<ImageButton>(R.id.backNavigator).setOnClickListener {
@@ -49,16 +53,16 @@ class AddNote(private var viewModel: NotesAppViewModel) : Fragment() {
         }
         view.findViewById<ImageButton>(R.id.save).setOnClickListener {
             if(arguments==null){
-                note = Note(0,title.text.toString(),content.text.toString(),LocalDate.now().toString(),LocalDate.now().toString(),0)
+                note = Note(0,title.text.toString(),content.text.toString(),time,time,0)
 //                INSERT NOTE
                 viewModel.addNote(note)
             }
             else{
-                note = Note(noteId,title.text.toString(),content.text.toString(),LocalDate.now().toString(),LocalDate.now().toString(),0)
+                note = Note(noteId,title.text.toString(),content.text.toString(),time,time,0)
 //                UPDATE NOTE
                 viewModel.updateNote(note)
             }
-            println((Note(noteId,title.text.toString(),content.text.toString(),LocalDate.now().toString(),LocalDate.now().toString(),0)).toString())
+            println((Note(noteId,title.text.toString(),content.text.toString(),time,time,0)).toString())
             parentFragmentManager.popBackStack()
         }
         view.findViewById<ImageButton>(R.id.deleteNote).setOnClickListener {

@@ -51,17 +51,17 @@ class NotesAdapter(private var context: Context,private val viewModel: NotesAppV
             }
             findViewById<ImageButton>(R.id.deleteBtnList).setOnClickListener {
 //                DELETE NOTES
-                viewModel.deleteNote(notesList[position])
-
-
+                viewModel.deleteNote(notesList[holder.adapterPosition])
             }
         }
     }
 
     fun setNotes(notes:MutableList<Note>){
+        println("Set Notes Called")
         val diffUtil = NotesDiffUtil(notesList,notes)
         val diffResults = DiffUtil.calculateDiff(diffUtil)
-        notesList = notes
+        notesList.clear()
+        notesList.addAll(notes)
         diffResults.dispatchUpdatesTo(this)
     }
 }
