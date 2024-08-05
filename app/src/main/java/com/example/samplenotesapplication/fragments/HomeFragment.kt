@@ -35,7 +35,9 @@ class HomeFragment : Fragment() {
         val viewModel = ViewModelProvider(this,viewModelFactory)[NotesAppViewModel::class.java]
         val adapter = NotesAdapter(requireContext(),viewModel)
         viewModel.getAllNotes().observe(viewLifecycleOwner, Observer {
+            println("Observer called")
             adapter.setNotes(it)
+            println(it.size)
         })
         rv.adapter = adapter
         rv.layoutManager = LinearLayoutManager(context)

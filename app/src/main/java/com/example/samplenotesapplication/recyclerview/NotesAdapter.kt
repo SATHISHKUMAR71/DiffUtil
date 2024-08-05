@@ -50,23 +50,15 @@ class NotesAdapter(private var context: Context,private val viewModel: NotesAppV
             }
 //            DELETE NOTES
             findViewById<ImageButton>(R.id.deleteBtnList).setOnClickListener {
-                val actualPos = holder.adapterPosition
-                if(actualPos != RecyclerView.NO_POSITION){
-                    val item = notesList.getOrNull(actualPos)
-                    if(item!=null){
-                        viewModel.deleteNote(notesList[actualPos])
-                    }
-                }
+                viewModel.deleteNote(notesList[holder.adapterPosition])
             }
         }
     }
 
     fun setNotes(notes:MutableList<Note>){
-
         val diffUtil = NotesDiffUtil(notesList,notes)
         val diffResults = DiffUtil.calculateDiff(diffUtil)
-        notesList.clear()
-        notesList.addAll(notes)
+        notesList = notes
         diffResults.dispatchUpdatesTo(this)
     }
 }
