@@ -18,6 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Title"
+            android:padding="5dp"
             android:ellipsize="end"
             android:maxLines="1"
             android:textSize="32sp"
@@ -29,8 +30,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Content"
+            android:padding="5dp"
             android:ellipsize="end"
-            android:maxLines="1"
+            android:maxLines="5"
             android:textSize="22sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/titleNote" />
@@ -40,25 +42,14 @@
             android:id="@+id/dateNote"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:layout_marginTop="20dp"
             android:ellipsize="end"
             android:maxLines="1"
             android:text="date"
+            android:padding="5dp"
             android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/contentNote" />
-
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:id="@+id/deleteBtnList"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:layout_marginEnd="10dp"
-            android:background="@drawable/baseline_delete_24"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

@@ -37,7 +37,7 @@ class AddNote(private var viewModel: NotesAppViewModel) : Fragment() {
         val content = view.findViewById<EditText>(R.id.content)
         val date = view.findViewById<TextView>(R.id.date)
         date.text = LocalDate.now().toString()
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM--dd HH:mm:ss")
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
         val time = LocalDateTime.now().format(formatter)
         if(arguments!=null){
             arguments?.let {
@@ -55,16 +55,24 @@ class AddNote(private var viewModel: NotesAppViewModel) : Fragment() {
             if(arguments==null){
                 note = Note(0,title.text.toString(),content.text.toString(),time,time,0)
 //                INSERT NOTE
-                note?.let {
-                    viewModel.addNote(it)
+                if((title.text.toString()!="")||(content.text.toString()!="")){
+                    note?.let {
+                        viewModel.addNote(it)
+                    }
                 }
-
             }
             else{
                 note = Note(noteId,title.text.toString(),content.text.toString(),time,time,0)
 //                UPDATE NOTE
-                note?.let {
-                    viewModel.updateNote(it)
+                if((title.text.toString()!="")||(content.text.toString()!="")) {
+                    note?.let {
+                        viewModel.updateNote(it)
+                    }
+                }
+                else{
+                    note?.let {
+                        viewModel.deleteNote(it)
+                    }
                 }
             }
             parentFragmentManager.popBackStack()

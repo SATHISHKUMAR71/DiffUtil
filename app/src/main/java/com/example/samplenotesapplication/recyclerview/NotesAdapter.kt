@@ -32,9 +32,25 @@ class NotesAdapter(private var context: Context,private val viewModel: NotesAppV
     override fun onBindViewHolder(holder: NotesViewHolder, position: Int) {
         holder.itemView.apply {
             pos = holder.adapterPosition
-            findViewById<TextView>(R.id.titleNote).text = notesList[position].title
-            findViewById<TextView>(R.id.dateNote).text = notesList[position].createdAt
-            findViewById<TextView>(R.id.contentNote).text = notesList[position].content
+            val date = findViewById<TextView>(R.id.dateNote)
+            val title = findViewById<TextView>(R.id.titleNote)
+            val content = findViewById<TextView>(R.id.contentNote)
+            title.text = notesList[position].title
+            println("Created at: ${notesList[position].createdAt}")
+            date.text = notesList[position].createdAt
+            content.text = notesList[position].content
+            if(!((title.text == "") && (content.text==""))){
+                if (title.text == "") {
+                    title.visibility = View.GONE
+                } else {
+                    title.visibility = View.VISIBLE
+                }
+                if (content.text == "") {
+                    content.visibility = View.GONE
+                } else {
+                    content.visibility = View.VISIBLE
+                }
+            }
             this.setOnClickListener {
                 val addNoteFragment = AddNote(viewModel)
                 addNoteFragment.arguments = Bundle().apply {
@@ -47,10 +63,6 @@ class NotesAdapter(private var context: Context,private val viewModel: NotesAppV
                     .replace(R.id.fragmentContainerView,addNoteFragment)
                     .addToBackStack("Note View")
                     .commit()
-            }
-//            DELETE NOTES
-            findViewById<ImageButton>(R.id.deleteBtnList).setOnClickListener {
-                viewModel.deleteNote(notesList[holder.adapterPosition])
             }
         }
     }
