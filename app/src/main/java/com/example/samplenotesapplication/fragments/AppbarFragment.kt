@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.samplenotesapplication.R
-import com.example.samplenotesapplication.listeners.OnBackPressed
+
 
 
 class AppbarFragment : Fragment() {

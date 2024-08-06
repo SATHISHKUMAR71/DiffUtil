@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
@@ -20,11 +21,10 @@ import com.example.samplenotesapplication.R
 
 import com.example.samplenotesapplication.fragments.AddNote
 import com.example.samplenotesapplication.fragments.LongPressedFragment
-import com.example.samplenotesapplication.listeners.OnBackPressed
 import com.example.samplenotesapplication.model.Note
 import com.example.samplenotesapplication.viewmodel.NotesAppViewModel
 
-class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapter<NotesAdapter.NotesViewHolder>(),OnBackPressed {
+class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapter<NotesAdapter.NotesViewHolder>() {
 
     private var selectedItemList :MutableList<Note> = mutableListOf()
     private var notesList: MutableList<Note> = mutableListOf()
@@ -42,6 +42,7 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onBindViewHolder(holder: NotesViewHolder, position: Int) {
+
         holder.itemView.apply {
             selectedItemPos = holder.adapterPosition
             val date = findViewById<TextView>(R.id.dateNote)
@@ -51,10 +52,19 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
             println("Created at: ${notesList[position].createdAt}")
             date.text = notesList[position].createdAt
             content.text = notesList[position].content
-            background = if(!notesList[position].isSelected){
-                ContextCompat.getDrawable(context,R.drawable.normal_background_drawable)
-            } else{
-                ContextCompat.getDrawable(context,R.drawable.long_pressed_drawable)
+            if(!notesList[position].isSelected){
+                background = ContextCompat.getDrawable(context,R.drawable.normal_background_drawable)
+                findViewById<CheckBox>(R.id.isChecked).apply {
+                    visibility = View.INVISIBLE
+                    isChecked = false
+                }
+            }
+            else{
+                background = ContextCompat.getDrawable(context,R.drawable.long_pressed_drawable)
+                findViewById<CheckBox>(R.id.isChecked).apply {
+                    visibility = View.VISIBLE
+                    isChecked = true
+                }
             }
             if(!((title.text == "") && (content.text==""))){
                 if (title.text == "") {
@@ -72,10 +82,9 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
 
             setOnLongClickListener {
                 selectedItemPos = holder.adapterPosition
+
                 if(isLongPressed==0){
                     isLongPressed = 1
-                    notesList[holder.adapterPosition].isSelected = true
-                    viewModel.setSelectedNote(notesList[holder.adapterPosition])
                     (context as FragmentActivity).supportFragmentManager.beginTransaction()
                         .replace(R.id.fragmentContainerMenu,LongPressedFragment())
                         .addToBackStack("Long pressed by the user")
@@ -87,7 +96,7 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
             this.setOnClickListener {
                 if(isLongPressed == 1){
                     selectedItemPos = holder.adapterPosition
-                    notesList[holder.adapterPosition].isSelected = true
+                    notesList[holder.adapterPosition].isSelected = !notesList[holder.adapterPosition].isSelected
                     viewModel.setSelectedNote(notesList[holder.adapterPosition])
                 }
                 else{
@@ -115,7 +124,7 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
         diffResults.dispatchUpdatesTo(this)
     }
 
-    override fun onBackPressed() {
+     fun onBackPressed() {
         println("On Back Pressed")
         val list = notesList.map {
             it.copy(isSelected = false)

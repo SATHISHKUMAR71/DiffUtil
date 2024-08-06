@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.MutableLiveData
 import com.example.samplenotesapplication.R
-import com.example.samplenotesapplication.listeners.OnBackPressed
 import com.example.samplenotesapplication.viewmodel.NotesAppViewModel
 
 
