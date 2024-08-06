@@ -19,26 +19,6 @@ class NotesDiffUtil(
     }
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        return when{
-            oldList[oldItemPosition].id != newList[newItemPosition].id -> {
-                false
-            }
-            oldList[oldItemPosition].content != newList[newItemPosition].content -> {
-                false
-            }
-            oldList[oldItemPosition].title != newList[newItemPosition].title -> {
-                false
-            }
-            oldList[oldItemPosition].createdAt != newList[newItemPosition].createdAt -> {
-                false
-            }
-            oldList[oldItemPosition].isPinned != newList[newItemPosition].isPinned -> {
-                false
-            }
-            oldList[oldItemPosition].updatedAt != newList[newItemPosition].updatedAt -> {
-                false
-            }
-            else -> true
+        return oldList[oldItemPosition] == newList[newItemPosition]
         }
     }
-}

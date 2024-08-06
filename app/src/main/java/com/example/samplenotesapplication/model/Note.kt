@@ -11,5 +11,6 @@ data class Note(
     var content:String,
     var createdAt:String,
     var updatedAt:String,
-    var isPinned:Int
+    var isPinned:Int,
+    var isSelected:Boolean
 )

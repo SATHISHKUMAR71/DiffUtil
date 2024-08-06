@@ -45,7 +45,7 @@ class AddNote(private var viewModel: NotesAppViewModel) : Fragment() {
                 content.setText(it.getString("content"))
                 date.text = (it.getString("date"))
                 noteId = it.getInt("id")
-                note = Note(noteId,title.text.toString(),content.text.toString(),time,time,0)
+                note = Note(noteId,title.text.toString(),content.text.toString(),time,time,0,false)
             }
         }
         view.findViewById<ImageButton>(R.id.backNavigator).setOnClickListener {
@@ -53,7 +53,7 @@ class AddNote(private var viewModel: NotesAppViewModel) : Fragment() {
         }
         view.findViewById<ImageButton>(R.id.save).setOnClickListener {
             if(arguments==null){
-                note = Note(0,title.text.toString(),content.text.toString(),time,time,0)
+                note = Note(0,title.text.toString(),content.text.toString(),time,time,0,false)
 //                INSERT NOTE
                 if((title.text.toString()!="")||(content.text.toString()!="")){
                     note?.let {
@@ -62,7 +62,7 @@ class AddNote(private var viewModel: NotesAppViewModel) : Fragment() {
                 }
             }
             else{
-                note = Note(noteId,title.text.toString(),content.text.toString(),time,time,0)
+                note = Note(noteId,title.text.toString(),content.text.toString(),time,time,0,false)
 //                UPDATE NOTE
                 if((title.text.toString()!="")||(content.text.toString()!="")) {
                     note?.let {

@@ -33,11 +33,20 @@ class HomeFragment : Fragment() {
         val rv = view.findViewById<RecyclerView>(R.id.notesRecyclerView)
         val viewModelFactory = NotesViewModelFactory(requireActivity().application, NoteRepository(NotesDatabase.getNoteDatabase(requireContext())))
         val viewModel = ViewModelProvider(this,viewModelFactory)[NotesAppViewModel::class.java]
-        val adapter = NotesAdapter(requireContext(),viewModel)
+        val adapter = NotesAdapter(viewModel)
         viewModel.getAllNotes().observe(viewLifecycleOwner, Observer {
             println("Observer called")
             adapter.setNotes(it)
             println(it.size)
+        })
+
+        viewModel.selectedNote.observe(viewLifecycleOwner, Observer {
+            println("selected note Observer Called")
+            adapter.selectedItem()
+        })
+        NotesAppViewModel.onBackPressed.observe(viewLifecycleOwner, Observer {
+            println("set notes called in back pressed")
+            adapter.onBackPressed()
         })
         rv.adapter = adapter
         rv.layoutManager = LinearLayoutManager(context)
@@ -50,6 +59,21 @@ class HomeFragment : Fragment() {
             }
         }
         return view
+    }
+
+    override fun onPause() {
+        super.onPause()
+        println("F On Pause")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        println("F On Resume")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        println("F On Stop")
     }
 
 }
