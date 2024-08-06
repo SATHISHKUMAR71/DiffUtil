@@ -52,6 +52,14 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
             println("Created at: ${notesList[position].createdAt}")
             date.text = notesList[position].createdAt
             content.text = notesList[position].content
+            findViewById<CheckBox>(R.id.isChecked).apply {
+                setOnClickListener {
+                    selectedItemPos = holder.adapterPosition
+                    isChecked = !isChecked
+                    notesList[holder.adapterPosition].isSelected = !notesList[holder.adapterPosition].isSelected
+                    viewModel.setSelectedNote(notesList[holder.adapterPosition])
+                }
+            }
             if(!notesList[position].isSelected){
                 background = ContextCompat.getDrawable(context,R.drawable.normal_background_drawable)
                 findViewById<CheckBox>(R.id.isChecked).apply {
@@ -82,7 +90,6 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
 
             setOnLongClickListener {
                 selectedItemPos = holder.adapterPosition
-
                 if(isLongPressed==0){
                     isLongPressed = 1
                     (context as FragmentActivity).supportFragmentManager.beginTransaction()
