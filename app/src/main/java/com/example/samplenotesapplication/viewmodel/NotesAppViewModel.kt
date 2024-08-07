@@ -8,20 +8,22 @@ import androidx.lifecycle.viewModelScope
 import com.example.samplenotesapplication.model.Note
 import com.example.samplenotesapplication.repository.NoteRepository
 import kotlinx.coroutines.launch
+import java.util.Collections.max
+import java.util.Collections.min
 
 class NotesAppViewModel(private val application: Application,private val noteRepository: NoteRepository):AndroidViewModel(application) {
 
 
     var selectedNote = MutableLiveData<Note>()
     companion object{
-        var isPinned = 0
-        var newPinnedCount = 0
+        var isPinned = MutableLiveData(0)
         var onBackPressed = MutableLiveData(false)
         var selectAllItem = MutableLiveData(false)
         var pinItemsClicked = MutableLiveData(false)
         var deleteSelectedItems = MutableLiveData(false)
-        fun setBackPressed(pressed:Boolean){
-            onBackPressed.value = pressed
+        fun setPinnedValues(list: List<Int>){
+            println("PIN OBSERVER CALLED $list")
+            isPinned.value =  min(list)
         }
     }
 

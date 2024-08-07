@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -73,12 +74,12 @@ class HomeFragment : Fragment() {
 
 //        Pin Items Observer
         NotesAppViewModel.pinItemsClicked.observe(viewLifecycleOwner, Observer {
-            println("ISPINNED : ${NotesAppViewModel.isPinned}")
-            if(NotesAppViewModel.isPinned==0){
-                adapter.unpinSelectedItems()
+            println("PIN OBSERVER CALLED Pin Operation ${NotesAppViewModel.isPinned.value}")
+            if(NotesAppViewModel.isPinned.value== 0){
+                adapter.pinSelectedItems()
             }
             else{
-                adapter.pinSelectedItems()
+                adapter.unpinSelectedItems()
             }
         })
 

@@ -5,7 +5,8 @@
 
     <item android:id="@+id/pinSelectedNotes"
         android:title="Pin Selected Items"
-        android:icon="@drawable/baseline_push_pin_24"
+        android:icon="@drawable/gps"
+        android:iconTint="@color/white"
         app:showAsAction="always"/>
     <item android:id="@+id/selectAllItems"
         app:showAsAction="always"

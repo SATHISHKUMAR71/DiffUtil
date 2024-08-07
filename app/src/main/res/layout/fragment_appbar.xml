@@ -16,9 +16,8 @@
             android:layout_height="match_parent"
             app:titleCentered="true"
             app:title="Notes"
+            app:popupTheme="@color/white"
             android:background="?attr/colorPrimaryDark"
             app:titleTextColor="?attr/colorOnPrimary"/>
-
-
     </com.google.android.material.appbar.AppBarLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
