@@ -45,7 +45,7 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
     inner class NotesViewHolder(itemView: View):RecyclerView.ViewHolder(itemView)
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NotesViewHolder {
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss a")
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss a")
         val now = LocalDateTime.now()
         val currentDate = now.format(formatter)
         println(currentDate)

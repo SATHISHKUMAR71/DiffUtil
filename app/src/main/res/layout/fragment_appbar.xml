@@ -11,13 +11,11 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-        <com.google.android.material.appbar.MaterialToolbar
+        <SearchView
+            android:id="@+id/searchView"
+            android:queryHint="Search Notes"
+            android:background="@color/white"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:titleCentered="true"
-            app:title="Notes"
-            app:popupTheme="@color/white"
-            android:background="?attr/colorPrimaryDark"
-            app:titleTextColor="?attr/colorOnPrimary"/>
+            android:layout_height="wrap_content"/>
     </com.google.android.material.appbar.AppBarLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

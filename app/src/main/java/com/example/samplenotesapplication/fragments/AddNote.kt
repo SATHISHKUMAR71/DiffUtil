@@ -18,6 +18,7 @@ import com.example.samplenotesapplication.viewmodel.NotesAppViewModel
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 class AddNote(private var viewModel: NotesAppViewModel) : Fragment() {
 
@@ -37,7 +38,7 @@ class AddNote(private var viewModel: NotesAppViewModel) : Fragment() {
         val title = view.findViewById<EditText>(R.id.title)
         val content = view.findViewById<EditText>(R.id.content)
         val date = view.findViewById<TextView>(R.id.date)
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss a")
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss a")
         val now = LocalDateTime.now()
         var time = now.format(formatter)
         time = "$time ${now.dayOfWeek.getDisplayName(java.time.format.TextStyle.FULL, java.util.Locale.getDefault())}"
@@ -68,6 +69,7 @@ class AddNote(private var viewModel: NotesAppViewModel) : Fragment() {
 //                INSERT NOTE
                 if((title.text.toString()!="")||(content.text.toString()!="")){
                     note?.let {
+                        println("TIme: $time")
                         viewModel.addNote(it)
                     }
                 }

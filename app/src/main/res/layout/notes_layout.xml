@@ -27,13 +27,15 @@
 
         <TextView
             android:id="@+id/contentNote"
-            android:layout_width="wrap_content"
+            android:paddingEnd="2dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Content"
-            android:padding="5dp"
             android:ellipsize="end"
             android:maxLines="5"
+            android:padding="5dp"
+            android:text="Content"
             android:textSize="22sp"
+            app:layout_constraintEnd_toStartOf="@+id/isChecked"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/titleNote" />
 

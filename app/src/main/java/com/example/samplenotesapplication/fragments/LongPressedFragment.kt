@@ -8,6 +8,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.SearchView
 import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -29,6 +30,7 @@ class LongPressedFragment(val viewModel: NotesAppViewModel) : Fragment() {
         // Inflate the layout for this fragment
         val view =  inflater.inflate(R.layout.fragment_long_pressed, container, false)
         val toolbar = view.findViewById<MaterialToolbar>(R.id.longPressedToolbar)
+
         toolbar.setOnMenuItemClickListener {
             when(it.itemId){
                 (R.id.selectAllItems)->{
@@ -53,24 +55,22 @@ class LongPressedFragment(val viewModel: NotesAppViewModel) : Fragment() {
 //            UNPIN
             println("PIN OBSERVER CALLED")
 
-            if(NotesAppViewModel.isPinned.value== 0){
-                toolbar.menu.findItem(R.id.pinSelectedNotes).apply {
-                    isVisible = true
-                    setIcon(R.drawable.icons8_pin_50)
+            when(NotesAppViewModel.isPinned.value){
+                0 -> {
+                    toolbar.menu.findItem(R.id.pinSelectedNotes).apply {
+                        isVisible = true
+                        setIcon(R.drawable.icons8_pin_50)
+                    }
                 }
-            }
-
-            else if(NotesAppViewModel.isPinned.value== 2){
-                toolbar.menu.findItem(R.id.pinSelectedNotes).isVisible = false
-            }
-//            PIN
-            else{
-
-                toolbar.menu.findItem(R.id.pinSelectedNotes).apply {
-                    isVisible = true
-                    setIcon(R.drawable.icons8_unpin_50)
+                2 -> {
+                    toolbar.menu.findItem(R.id.pinSelectedNotes).isVisible = false
                 }
-
+                else -> {
+                    toolbar.menu.findItem(R.id.pinSelectedNotes).apply {
+                        isVisible = true
+                        setIcon(R.drawable.icons8_unpin_50)
+                    }
+                }
             }
         })
 
