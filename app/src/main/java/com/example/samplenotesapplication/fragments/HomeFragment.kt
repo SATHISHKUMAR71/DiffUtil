@@ -35,22 +35,46 @@ class HomeFragment : Fragment() {
         val viewModelFactory = NotesViewModelFactory(requireActivity().application, NoteRepository(NotesDatabase.getNoteDatabase(requireContext())))
         val viewModel = ViewModelProvider(this,viewModelFactory)[NotesAppViewModel::class.java]
         val adapter = NotesAdapter(viewModel)
+
+//        Read Notes Observer
         viewModel.getAllNotes().observe(viewLifecycleOwner, Observer {
             println("Observer called")
             adapter.setNotes(it)
             println(it.size)
         })
 
+//        SelectedNotes Observer
         viewModel.selectedNote.observe(viewLifecycleOwner, Observer {
             println("selected note Observer Called")
             adapter.selectedItem()
         })
+
+//        Select All Items Observer
+        NotesAppViewModel.selectAllItem.observe(viewLifecycleOwner, Observer {
+            if(it){
+                adapter.selectAllItems()
+            }
+            else{
+                adapter.unSelectAllItems()
+            }
+        })
+
+//        On BackPressed Observer
         NotesAppViewModel.onBackPressed.observe(viewLifecycleOwner, Observer {
             println("set notes called in back pressed")
             adapter.onBackPressed()
         })
+
+//        Delete Selected Item Observer
+        NotesAppViewModel.deleteSelectedItems.observe(viewLifecycleOwner, Observer {
+            adapter.deleteSelectedItem()
+        })
+
+//        Adapter initialization
         rv.adapter = adapter
         rv.layoutManager = LinearLayoutManager(context)
+
+//        Floating Action Button On Click Listener
         view.findViewById<FloatingActionButton>(R.id.addButton).apply {
             setOnClickListener {
                 parentFragmentManager.beginTransaction()

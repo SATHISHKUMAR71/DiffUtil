@@ -15,7 +15,8 @@ class NotesAppViewModel(private val application: Application,private val noteRep
     var selectedNote = MutableLiveData<Note>()
     companion object{
         var onBackPressed = MutableLiveData(false)
-
+        var selectAllItem = MutableLiveData(false)
+        var deleteSelectedItems = MutableLiveData(false)
         fun setBackPressed(pressed:Boolean){
             onBackPressed.value = pressed
         }

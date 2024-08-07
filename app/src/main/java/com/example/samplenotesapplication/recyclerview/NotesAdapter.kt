@@ -1,19 +1,13 @@
 package com.example.samplenotesapplication.recyclerview
 
-import android.annotation.SuppressLint
-import android.content.Context
-import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
-import android.widget.ImageButton
 import android.widget.TextView
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
@@ -21,7 +15,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.samplenotesapplication.R
 import com.example.samplenotesapplication.constants.Months
-
 import com.example.samplenotesapplication.fragments.AddNote
 import com.example.samplenotesapplication.fragments.LongPressedFragment
 import com.example.samplenotesapplication.model.Note
@@ -33,10 +26,11 @@ import kotlin.math.abs
 class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapter<NotesAdapter.NotesViewHolder>() {
 
     private var selectedItemList :MutableList<Note> = mutableListOf()
+    private var isCheckable = false
     private var notesList: MutableList<Note> = mutableListOf()
     private var selectedItemPos = 0
     private var isLongPressed = 0
-    var firstTimeLongPressed = 0
+    private var firstTimeLongPressed = 0
     private lateinit var originalBackgroundColor:Drawable
     private lateinit var currentTime:List<String>
     private var currentDay = 0
@@ -64,7 +58,7 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
         return notesList.size
     }
 
-    @SuppressLint("ClickableViewAccessibility")
+
     override fun onBindViewHolder(holder: NotesViewHolder, position: Int) {
 
         holder.itemView.apply {
@@ -154,14 +148,14 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
                 false
             }
 
+//            Recycler view Item Click Listener
             this.setOnClickListener {
-
                 if((isLongPressed == 1) && (firstTimeLongPressed == 1)){
                     selectedItemPos = holder.adapterPosition
                     notesList[holder.adapterPosition].isSelected = !notesList[holder.adapterPosition].isSelected
                     viewModel.setSelectedNote(notesList[holder.adapterPosition])
                 }
-                else if(firstTimeLongPressed == 0){
+                else if((isLongPressed == 1) && (firstTimeLongPressed == 0)){
                     firstTimeLongPressed = 1
                 }
                 else{
@@ -191,6 +185,7 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
 
      fun onBackPressed() {
         println("On Back Pressed")
+         firstTimeLongPressed = 0
         val list = notesList.map {
             it.copy(isSelected = false)
         }.toMutableList()
@@ -203,5 +198,32 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
 
     fun selectedItem(){
         notifyItemChanged(selectedItemPos)
+    }
+
+    fun selectAllItems() {
+        val list = notesList.map {
+            it.copy(isSelected = true)
+        }.toMutableList()
+        setNotes(list)
+    }
+
+    fun unSelectAllItems() {
+        val list = notesList.map {
+            it.copy(isSelected = false)
+        }.toMutableList()
+        setNotes(list)
+    }
+
+    fun deleteSelectedItem() {
+        val list = notesList.filter {
+            if(it.isSelected){
+                viewModel.deleteNote(it)
+                false
+            }
+            else{
+                true
+            }
+        }.toMutableList()
+        setNotes(list)
     }
 }

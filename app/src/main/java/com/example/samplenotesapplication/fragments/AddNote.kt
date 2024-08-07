@@ -12,6 +12,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import com.example.samplenotesapplication.R
+import com.example.samplenotesapplication.constants.Months
 import com.example.samplenotesapplication.model.Note
 import com.example.samplenotesapplication.viewmodel.NotesAppViewModel
 import java.time.LocalDate
@@ -36,7 +37,6 @@ class AddNote(private var viewModel: NotesAppViewModel) : Fragment() {
         val title = view.findViewById<EditText>(R.id.title)
         val content = view.findViewById<EditText>(R.id.content)
         val date = view.findViewById<TextView>(R.id.date)
-        date.text = LocalDate.now().toString()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss a")
         val now = LocalDateTime.now()
         var time = now.format(formatter)
@@ -49,6 +49,15 @@ class AddNote(private var viewModel: NotesAppViewModel) : Fragment() {
                 noteId = it.getInt("id")
                 note = Note(noteId,title.text.toString(),content.text.toString(),time,time,0,false)
             }
+        }
+        else{
+            val newDateTime = time.split(" ")
+            val dateValues = newDateTime[0].split("-")
+            val day = dateValues[2]
+            val monthName = Months.MONTHS[dateValues[2].toInt()]
+            val timeValues = newDateTime[1].split(":")
+            val newDateTimeFormat = "$day $monthName ${timeValues[0]}:${timeValues[1]} ${newDateTime[2]}"
+            date.text = newDateTimeFormat
         }
         view.findViewById<ImageButton>(R.id.backNavigator).setOnClickListener {
             parentFragmentManager.popBackStack()
