@@ -37,8 +37,10 @@ class AddNote(private var viewModel: NotesAppViewModel) : Fragment() {
         val content = view.findViewById<EditText>(R.id.content)
         val date = view.findViewById<TextView>(R.id.date)
         date.text = LocalDate.now().toString()
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-        val time = LocalDateTime.now().format(formatter)
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss a")
+        val now = LocalDateTime.now()
+        var time = now.format(formatter)
+        time = "$time ${now.dayOfWeek.getDisplayName(java.time.format.TextStyle.FULL, java.util.Locale.getDefault())}"
         if(arguments!=null){
             arguments?.let {
                 title.setText(it.getString("title"))
