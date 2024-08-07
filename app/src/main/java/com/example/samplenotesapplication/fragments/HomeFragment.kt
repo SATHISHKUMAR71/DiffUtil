@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.samplenotesapplication.R
+import com.example.samplenotesapplication.model.Note
 
 import com.example.samplenotesapplication.recyclerview.NotesAdapter
 import com.example.samplenotesapplication.model.NotesDatabase
@@ -68,6 +69,17 @@ class HomeFragment : Fragment() {
 //        Delete Selected Item Observer
         NotesAppViewModel.deleteSelectedItems.observe(viewLifecycleOwner, Observer {
             adapter.deleteSelectedItem()
+        })
+
+//        Pin Items Observer
+        NotesAppViewModel.pinItemsClicked.observe(viewLifecycleOwner, Observer {
+            println("ISPINNED : ${NotesAppViewModel.isPinned}")
+            if(NotesAppViewModel.isPinned==0){
+                adapter.unpinSelectedItems()
+            }
+            else{
+                adapter.pinSelectedItems()
+            }
         })
 
 //        Adapter initialization

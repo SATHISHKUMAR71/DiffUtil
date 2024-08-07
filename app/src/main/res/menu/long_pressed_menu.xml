@@ -3,16 +3,20 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/deleteSelectedItems"
-        app:showAsAction="always"
-        android:title="delete selected items"
-        android:icon="@drawable/baseline_delete_24"
-        android:iconTint="@color/white"
-        tools:ignore="UnusedAttribute" />
+    <item android:id="@+id/pinSelectedNotes"
+        android:title="Pin Selected Items"
+        android:icon="@drawable/baseline_push_pin_24"
+        app:showAsAction="always"/>
     <item android:id="@+id/selectAllItems"
         app:showAsAction="always"
         android:title="select all items"
         android:iconTint="@color/white"
         android:icon="@drawable/baseline_done_all_24"
+        tools:ignore="UnusedAttribute" />
+    <item android:id="@+id/deleteSelectedItems"
+        app:showAsAction="always"
+        android:title="delete selected items"
+        android:icon="@drawable/baseline_delete_24"
+        android:iconTint="@color/white"
         tools:ignore="UnusedAttribute" />
 </menu>

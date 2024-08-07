@@ -38,6 +38,11 @@ class LongPressedFragment : Fragment() {
                     onDestroyView()
                     true
                 }
+                (R.id.pinSelectedNotes) -> {
+                    NotesAppViewModel.pinItemsClicked.value = NotesAppViewModel.pinItemsClicked.value != true
+                    onDestroyView()
+                    true
+                }
                 else -> false
             }
         }
