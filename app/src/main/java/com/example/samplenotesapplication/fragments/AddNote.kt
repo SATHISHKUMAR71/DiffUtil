@@ -11,6 +11,7 @@ import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.fragment.app.FragmentContainerView
 import com.example.samplenotesapplication.R
 import com.example.samplenotesapplication.constants.Months
 import com.example.samplenotesapplication.model.Note
@@ -25,6 +26,7 @@ class AddNote(private var viewModel: NotesAppViewModel) : Fragment() {
     private var noteId=0
     private var note: Note? = null
     override fun onCreate(savedInstanceState: Bundle?) {
+        requireActivity().findViewById<FragmentContainerView>(R.id.fragmentContainerMenu).visibility = View.GONE
         super.onCreate(savedInstanceState)
     }
 
@@ -106,6 +108,10 @@ class AddNote(private var viewModel: NotesAppViewModel) : Fragment() {
         return view
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        requireActivity().findViewById<FragmentContainerView>(R.id.fragmentContainerMenu).visibility = View.VISIBLE
+    }
     override fun onDestroy() {
         super.onDestroy()
         println("On Fragment Destroy")

@@ -37,7 +37,7 @@ class HomeFragment : Fragment() {
         appbarFragment = AppbarFragment()
         if(parentFragmentManager.findFragmentByTag("longFragmentEnabled")?.isVisible != true){
             parentFragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainerMenu,appbarFragment)
+                .replace(R.id.fragmentContainerMenu,appbarFragment,"appbarFragment")
                 .commit()
         }
     }

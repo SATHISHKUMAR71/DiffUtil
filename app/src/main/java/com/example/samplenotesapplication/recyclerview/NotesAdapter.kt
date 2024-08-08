@@ -1,12 +1,14 @@
 package com.example.samplenotesapplication.recyclerview
 
 import android.content.Context
+import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
@@ -384,20 +386,50 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
 
     fun deleteDialog(context: Context){
         val builder = AlertDialog.Builder(context)
-        builder.setTitle("Delete Notes")
+
+        val customView = LayoutInflater.from(context).inflate(R.layout.custom_alert_dialog,null)
+        val title = customView.findViewById<TextView>(R.id.dialog_title)
+        val message = customView.findViewById<TextView>(R.id.dialog_message)
+        title.text = "Delete Notes"
+        message.text = "Delete $selectCount items?"
+//        builder.setTitle("Delete Notes")
         NotesAppViewModel.selectCount.value = selectCount
-        builder.setMessage("Delete $selectCount items?")
-        builder.setPositiveButton("Delete"){dialog,_->
+//        builder.setMessage("Delete $selectCount items?")
+        builder.setView(customView)
+        builder.setPositiveButton(null){dialog,_->
             println("DELETE CONFIRMATION TRUE")
             NotesAppViewModel.deleteConfirmation.value = true
             dialog.dismiss()
         }
-        builder.setNeutralButton("Cancel"){dialog,_->
+        builder.setNeutralButton(null){dialog,_->
             println("DELETE CONFIRMATION FALSE")
             NotesAppViewModel.deleteConfirmation.value = false
             dialog.dismiss()
         }
         deleteDialog = builder.create()
         deleteDialog.show()
+        deleteDialog.window?.setBackgroundDrawable(ContextCompat.getDrawable(context,R.drawable.rounded_corners))
+        val pos = deleteDialog.getButton(AlertDialog.BUTTON_POSITIVE)
+        pos?.let {
+            val parent = it.parent as ViewGroup
+            parent.removeView(it)
+            customView.findViewById<Button>(R.id.positiveBtn).setOnClickListener {
+                // Trigger the dialog's positive action
+                deleteDialog.getButton(AlertDialog.BUTTON_POSITIVE).performClick()
+                println("DELETE CONFIRMATION TRUE")
+                NotesAppViewModel.deleteConfirmation.value = true
+            }
+        }
+        val neg = deleteDialog.getButton(AlertDialog.BUTTON_NEGATIVE)
+        neg?.let {
+            val parent = it.parent as ViewGroup
+            parent.removeView(it)
+            customView.findViewById<Button>(R.id.negativeBtn).setOnClickListener {
+                // Trigger the dialog's positive action
+                deleteDialog.getButton(AlertDialog.BUTTON_NEGATIVE).performClick()
+                println("DELETE CONFIRMATION FALSE")
+                NotesAppViewModel.deleteConfirmation.value = false
+            }
+        }
     }
 }
