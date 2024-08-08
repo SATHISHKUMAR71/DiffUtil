@@ -30,7 +30,9 @@ class LongPressedFragment : Fragment() {
         // Inflate the layout for this fragment
         val view =  inflater.inflate(R.layout.fragment_long_pressed, container, false)
         val toolbar = view.findViewById<MaterialToolbar>(R.id.longPressedToolbar)
-
+        NotesAppViewModel.selectCount.observe(viewLifecycleOwner, Observer {
+            toolbar.setTitle("$it Items Selected")
+        })
         toolbar.setOnMenuItemClickListener {
             when(it.itemId){
                 (R.id.selectAllItems)->{

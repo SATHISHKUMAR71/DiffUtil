@@ -1,6 +1,5 @@
 package com.example.samplenotesapplication.recyclerview
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.os.Build
@@ -11,14 +10,10 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.annotation.MainThread
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.samplenotesapplication.R
@@ -37,9 +32,8 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
     private var pinnedList:MutableList<Int> = mutableListOf(2)
     private var notesList: MutableList<Note> = mutableListOf()
     private var selectedItemPos = 0
-    private var deleteList:MutableList<Note> = mutableListOf()
+    private var selectCount = 0
     private lateinit var deleteDialog:AlertDialog
-    private var deleteConfirmation = false
     private var isCheckable = false
     private var isLongPressed = 0
     private var firstTimeLongPressed = 0
@@ -119,6 +113,8 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
                     isChecked = !isChecked
                     if(notesList[holder.adapterPosition].isSelected){
                         notesList[holder.adapterPosition].isSelected = false
+                        selectCount-=1
+                        NotesAppViewModel.selectCount.value = selectCount
                         if(notesList[holder.adapterPosition].isPinned==1){
                             pinnedList.remove(1)
                         }
@@ -127,6 +123,8 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
                         }
                     }
                     else{
+                        selectCount+=1
+                        NotesAppViewModel.selectCount.value = selectCount
                         notesList[holder.adapterPosition].isSelected = true
                         if(notesList[holder.adapterPosition].isPinned==1){
                             pinnedList.add(1)
@@ -184,6 +182,8 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
                     isLongPressed = 1
                     if(notesList[holder.adapterPosition].isSelected){
                         notesList[holder.adapterPosition].isSelected = false
+                        selectCount -=1
+                        NotesAppViewModel.selectCount.value = selectCount
                         if(notesList[holder.adapterPosition].isPinned==1){
                             pinnedList.remove(1)
                         }
@@ -192,6 +192,8 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
                         }
                     }
                     else{
+                        selectCount+=1
+                        NotesAppViewModel.selectCount.value = selectCount
                         notesList[holder.adapterPosition].isSelected = true
                         if(notesList[holder.adapterPosition].isPinned==1){
                             pinnedList.add(1)
@@ -216,6 +218,8 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
                     selectedItemPos = holder.adapterPosition
                     if(notesList[holder.adapterPosition].isSelected){
                         notesList[holder.adapterPosition].isSelected = false
+                        selectCount -=1
+                        NotesAppViewModel.selectCount.value = selectCount
                         if(notesList[holder.adapterPosition].isPinned==1){
                             pinnedList.remove(1)
                         }
@@ -225,6 +229,8 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
                     }
                     else{
                         notesList[holder.adapterPosition].isSelected = true
+                        selectCount +=1
+                        NotesAppViewModel.selectCount.value = selectCount
                         if(notesList[holder.adapterPosition].isPinned==1){
                             pinnedList.add(1)
                         }
@@ -264,6 +270,8 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
 
      fun onBackPressed() {
          firstTimeLongPressed = 0
+         selectCount = 0
+         NotesAppViewModel.selectCount.value = selectCount
         val list = notesList.map {
             it.copy(isSelected = false)
         }.toMutableList()
@@ -281,6 +289,8 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
 
     fun selectAllItems() {
         pinnedList = mutableListOf(2)
+        selectCount = 0
+        NotesAppViewModel.selectCount.value = selectCount
         val list = notesList.map {
                 if(it.isPinned==1){
                     pinnedList.add(1)
@@ -288,6 +298,8 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
                 else{
                     pinnedList.add(0)
                 }
+            selectCount +=1
+            NotesAppViewModel.selectCount.value = selectCount
             NotesAppViewModel.setPinnedValues(pinnedList)
             it.copy(isSelected = true)
         }.toMutableList()
@@ -295,6 +307,8 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
     }
 
     fun unSelectAllItems() {
+        selectCount = 0
+        NotesAppViewModel.selectCount.value = selectCount
         val list = notesList.map {
             it.copy(isSelected = false)
         }.toMutableList()
@@ -307,7 +321,6 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
             println("DELETE items checked")
             val list = notesList.filter {
                 if(it.isSelected){
-
                     viewModel.deleteNote(it)
                     false
                 }
@@ -371,14 +384,15 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
 
     fun deleteDialog(context: Context){
         val builder = AlertDialog.Builder(context)
-        builder.setTitle("Delete Items")
-        builder.setMessage("Are you sure you want to delete this selected items?")
-        builder.setPositiveButton("Yes"){dialog,which->
+        builder.setTitle("Delete Notes")
+        NotesAppViewModel.selectCount.value = selectCount
+        builder.setMessage("Delete $selectCount items?")
+        builder.setPositiveButton("Delete"){dialog,_->
             println("DELETE CONFIRMATION TRUE")
             NotesAppViewModel.deleteConfirmation.value = true
             dialog.dismiss()
         }
-        builder.setNeutralButton("No"){dialog,which->
+        builder.setNeutralButton("Cancel"){dialog,_->
             println("DELETE CONFIRMATION FALSE")
             NotesAppViewModel.deleteConfirmation.value = false
             dialog.dismiss()
