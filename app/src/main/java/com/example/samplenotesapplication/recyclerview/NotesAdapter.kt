@@ -190,7 +190,7 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
                     NotesAppViewModel.setPinnedValues(pinnedList)
                     viewModel.setSelectedNote(notesList[holder.adapterPosition])
                     (context as FragmentActivity).supportFragmentManager.beginTransaction()
-                        .replace(R.id.fragmentContainerMenu,LongPressedFragment(viewModel))
+                        .replace(R.id.fragmentContainerMenu,LongPressedFragment(),"longFragmentEnabled")
                         .addToBackStack("Long pressed by the user")
                         .commit()
                 }

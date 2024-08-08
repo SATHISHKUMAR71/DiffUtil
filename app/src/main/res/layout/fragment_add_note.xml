@@ -13,8 +13,8 @@
 
         <ImageButton
             android:id="@+id/backNavigator"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_margin="20dp"
             android:background="@drawable/baseline_arrow_back_24"
             android:contentDescription="@string/back_to_the_notes_app"
@@ -24,19 +24,19 @@
 
 
         <ImageButton
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_margin="20dp"
             android:id="@+id/deleteNote"
             android:layout_marginBottom="20dp"
-            android:background="@drawable/baseline_delete_24"
+            android:background="@drawable/black_delete"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/save" />
 
         <ImageButton
             android:id="@+id/save"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_margin="20dp"
             android:background="@drawable/baseline_check_24"
             android:contentDescription="@string/save_changes_and_back_to_notes_app"
@@ -61,7 +61,7 @@
         android:layout_height="wrap_content"
         android:text="@string/date"
         android:paddingStart="20dp"
-        android:textSize="20sp"
+        android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/title" />
 

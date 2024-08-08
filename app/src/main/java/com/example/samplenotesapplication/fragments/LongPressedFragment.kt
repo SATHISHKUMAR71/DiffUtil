@@ -17,7 +17,7 @@ import com.example.samplenotesapplication.viewmodel.NotesAppViewModel
 import com.google.android.material.appbar.MaterialToolbar
 
 
-class LongPressedFragment(val viewModel: NotesAppViewModel) : Fragment() {
+class LongPressedFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,11 +40,13 @@ class LongPressedFragment(val viewModel: NotesAppViewModel) : Fragment() {
                 }
                 (R.id.deleteSelectedItems)->{
                     NotesAppViewModel.deleteSelectedItems.value = true
+                    println("MENU ITEMS DELETE CLICKED")
                     onDestroyView()
                     true
                 }
                 (R.id.pinSelectedNotes) -> {
                     NotesAppViewModel.pinItemsClicked.value = NotesAppViewModel.pinItemsClicked.value != true
+                    println("MENU ITEMS PIN CLICKED")
                     onDestroyView()
                     true
                 }

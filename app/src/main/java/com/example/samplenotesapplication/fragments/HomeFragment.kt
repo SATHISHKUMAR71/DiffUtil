@@ -11,6 +11,7 @@ import android.widget.CheckBox
 import android.widget.SearchView
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -50,7 +51,6 @@ class HomeFragment : Fragment() {
                 println("ON BACK PRESSED HOME")
                 handleBackPress()
             }
-
         })
         val adapter = NotesAdapter(viewModel)
 
@@ -138,11 +138,19 @@ class HomeFragment : Fragment() {
 
         // Clear focus and hide keyboard if necessary
         val searchView = (appbarFragment.view?.findViewById<SearchView>(R.id.searchView))
+        println(searchActionPerformed)
+        println(searchView?.hasFocus())
         if ((searchView?.hasFocus() == true)||(searchActionPerformed)) {
+            println("IF")
             searchView?.setQuery("",false)
             val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(searchView?.windowToken, 0)
             searchView?.clearFocus()
+            searchActionPerformed = false
+        }
+        else if(parentFragmentManager.findFragmentByTag("longFragmentEnabled")?.isVisible == true){
+            println("ELSE IF")
+            parentFragmentManager.popBackStack()
         }
         else {
             requireActivity().finish()
