@@ -19,7 +19,7 @@ import com.example.samplenotesapplication.viewmodel.NotesViewModelFactory
 import com.google.android.material.appbar.MaterialToolbar
 
 
-class AppbarFragment(val viewModel: NotesAppViewModel) : Fragment() {
+class AppbarFragment : Fragment() {
     private lateinit var search:SearchView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

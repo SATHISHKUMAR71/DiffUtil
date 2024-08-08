@@ -40,7 +40,7 @@ class HomeFragment : Fragment() {
         val rv = view.findViewById<RecyclerView>(R.id.notesRecyclerView)
         val viewModelFactory = NotesViewModelFactory(requireActivity().application, NoteRepository(NotesDatabase.getNoteDatabase(requireContext())))
         val viewModel = ViewModelProvider(this,viewModelFactory)[NotesAppViewModel::class.java]
-        appbarFragment = AppbarFragment(viewModel = viewModel)
+        appbarFragment = AppbarFragment()
         parentFragmentManager.beginTransaction()
             .replace(R.id.fragmentContainerMenu,appbarFragment)
             .commit()
