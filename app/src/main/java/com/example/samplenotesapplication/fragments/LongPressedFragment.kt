@@ -1,5 +1,6 @@
 package com.example.samplenotesapplication.fragments
 
+import android.content.Context
 import android.os.Bundle
 import android.provider.ContactsContract.CommonDataKinds.Note
 import androidx.fragment.app.Fragment
@@ -10,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.SearchView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.example.samplenotesapplication.R
@@ -32,22 +34,34 @@ class LongPressedFragment : Fragment() {
         val toolbar = view.findViewById<MaterialToolbar>(R.id.longPressedToolbar)
         NotesAppViewModel.selectCount.observe(viewLifecycleOwner, Observer {
             toolbar.setTitle("$it Items Selected")
+            if(it==0){
+                toolbar.menu.findItem(R.id.deleteSelectedItems).setIcon(ContextCompat.getDrawable(requireContext(),R.drawable.delete_disabled))
+            }
+            else{
+                toolbar.menu.findItem(R.id.deleteSelectedItems).setIcon(ContextCompat.getDrawable(requireContext(),R.drawable.baseline_delete_24))
+            }
         })
         toolbar.setOnMenuItemClickListener {
             when(it.itemId){
                 (R.id.selectAllItems)->{
                     Toast.makeText(context,"Select all Clicked",Toast.LENGTH_SHORT).show()
                     NotesAppViewModel.selectAllItem.value = NotesAppViewModel.selectAllItem.value != true
+                    if(NotesAppViewModel.selectAllItem.value==true){
+                        toolbar.menu.findItem(R.id.selectAllItems).setIcon(ContextCompat.getDrawable(requireContext(),R.drawable.done_all_checked))
+                    }
+                    else{
+                        toolbar.menu.findItem(R.id.selectAllItems).setIcon(ContextCompat.getDrawable(requireContext(),R.drawable.baseline_done_all_24))
+                    }
                     true
                 }
                 (R.id.deleteSelectedItems)->{
-                    NotesAppViewModel.deleteSelectedItems.value = true
-                    println("MENU ITEMS DELETE CLICKED")
+                    if(NotesAppViewModel.selectCount.value!=0){
+                        NotesAppViewModel.deleteSelectedItems.value = true
+                    }
                     true
                 }
                 (R.id.pinSelectedNotes) -> {
                     NotesAppViewModel.pinItemsClicked.value = NotesAppViewModel.pinItemsClicked.value != true
-                    println("MENU ITEMS PIN CLICKED")
                     onDestroyView()
                     true
                 }
@@ -56,7 +70,6 @@ class LongPressedFragment : Fragment() {
         }
         NotesAppViewModel.isPinned.observe(viewLifecycleOwner, Observer {
 //            UNPIN
-            println("PIN OBSERVER CALLED")
 
             when(NotesAppViewModel.isPinned.value){
                 0 -> {

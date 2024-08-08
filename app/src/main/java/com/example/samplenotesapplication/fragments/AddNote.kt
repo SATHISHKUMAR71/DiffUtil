@@ -50,7 +50,8 @@ class AddNote(private var viewModel: NotesAppViewModel) : Fragment() {
                 content.setText(it.getString("content"))
                 date.text = (it.getString("date"))
                 noteId = it.getInt("id")
-                note = Note(noteId,title.text.toString(),content.text.toString(),time,time,0,false,false)
+                note = Note(noteId,title.text.toString(),content.text.toString(),time,time,arguments?.getInt("isPinned")?:0,false,false)
+                println("Notes123: $note")
             }
         }
         else{

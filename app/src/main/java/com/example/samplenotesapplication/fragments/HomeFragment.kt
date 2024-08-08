@@ -53,7 +53,6 @@ class HomeFragment : Fragment() {
         val viewModel = ViewModelProvider(this,viewModelFactory)[NotesAppViewModel::class.java]
         (context as FragmentActivity).onBackPressedDispatcher.addCallback(viewLifecycleOwner,object:OnBackPressedCallback(true){
             override fun handleOnBackPressed() {
-                println("ON BACK PRESSED HOME")
                 handleBackPress()
             }
         })
@@ -68,11 +67,9 @@ class HomeFragment : Fragment() {
                 viewModel.getAllNotes().observe(viewLifecycleOwner, Observer { getAll->
                     adapter.setNotes(getAll)
                 })
-                println("Search Get All Notes Called")
             }
             else{
                 searchActionPerformed = true
-                println("GIVES QUERY NOTES $it")
                 viewModel.getNotesByQuery(it).observe(viewLifecycleOwner, Observer { note ->
                     adapter.setNotes(note)
                 })
@@ -90,7 +87,6 @@ class HomeFragment : Fragment() {
 //        DELETE CONFIRMATION DIALOG OBSERVER
         NotesAppViewModel.deleteConfirmation.observe(viewLifecycleOwner, Observer {
             if(it){
-                println("DELETE ITEMS CLICKED")
                 adapter.deleteSelectedItem()
                 parentFragmentManager.popBackStack()
             }
@@ -122,7 +118,6 @@ class HomeFragment : Fragment() {
             if(it){
                 println("Dialog CALLED !")
                 adapter.deleteDialog(requireContext())
-
             }
         })
 
@@ -161,14 +156,14 @@ class HomeFragment : Fragment() {
 
         // Clear focus and hide keyboard if necessary
         val searchView = (appbarFragment.view?.findViewById<SearchView>(R.id.searchView))
-        println(searchActionPerformed)
-        println(searchView?.hasFocus())
+
+
         if(parentFragmentManager.findFragmentByTag("longFragmentEnabled")?.isVisible == true){
-            println("ELSE IF")
+
             parentFragmentManager.popBackStack()
         }
         else if ((searchView?.hasFocus() == true)||(searchActionPerformed)) {
-            println("IF")
+
             searchView?.setQuery("",false)
             val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(searchView?.windowToken, 0)
@@ -180,7 +175,7 @@ class HomeFragment : Fragment() {
 //            parentFragmentManager.popBackStack()
 //        }
         else {
-            println("ELSE")
+
             requireActivity().finish()
         }
     }

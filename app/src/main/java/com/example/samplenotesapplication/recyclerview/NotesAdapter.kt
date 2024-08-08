@@ -68,7 +68,6 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
 
 
     override fun onBindViewHolder(holder: NotesViewHolder, position: Int) {
-
         holder.itemView.apply {
             selectedItemPos = holder.adapterPosition
             val date = findViewById<TextView>(R.id.dateNote)
@@ -139,7 +138,7 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
                     viewModel.setSelectedNote(notesList[holder.adapterPosition])
                 }
             }
-            if(notesList[position].isPinned==1){
+            if(notesList[holder.adapterPosition].isPinned==1){
                 findViewById<ImageView>(R.id.pushPin).visibility = View.VISIBLE
             }
             else{
@@ -252,6 +251,7 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
                         putInt("id",notesList[holder.adapterPosition].id)
                         putString("title",notesList[holder.adapterPosition].title)
                         putString("date",dateInfo)
+                        putInt("isPinned",notesList[holder.adapterPosition].isPinned)
                         putString("content",notesList[holder.adapterPosition].content)
                     }
                     (context as FragmentActivity).supportFragmentManager.beginTransaction()
@@ -282,7 +282,7 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
         isLongPressed = 0
          pinnedList = mutableListOf(2)
          NotesAppViewModel.isPinned.value = 0
-         makeUnClickable()
+//         makeUnClickable()
     }
 
     fun selectedItem(){
@@ -305,6 +305,7 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
             NotesAppViewModel.setPinnedValues(pinnedList)
             it.copy(isSelected = true)
         }.toMutableList()
+        println("NOTES123: SELECTED")
         setNotes(list)
     }
 
@@ -314,13 +315,13 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
         val list = notesList.map {
             it.copy(isSelected = false)
         }.toMutableList()
+        println("NOTES123: UNSELECTED")
         pinnedList = mutableListOf(2)
         NotesAppViewModel.setPinnedValues(pinnedList)
         setNotes(list)
     }
 
     fun deleteSelectedItem() {
-            println("DELETE items checked")
             val list = notesList.filter {
                 if(it.isSelected){
                     viewModel.deleteNote(it)
@@ -337,9 +338,11 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
     }
 
     fun pinSelectedItems() {
+        println("NOTES123: PIN CALLED")
+        var i=0
         val list = notesList.map { note ->
             if (note.isSelected) {
-                val updatedNote = note.copy(isPinned = 1, isSelected = false)
+                val updatedNote = note.copy(isPinned = 1, isSelected = false,isCheckable = false)
                 viewModel.updateNote(updatedNote)
                 updatedNote
             } else {
@@ -351,9 +354,11 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
     }
 
     fun unpinSelectedItems() {
+        println("NOTES123: UNPIN CALLED")
+        var i=0
         val list = notesList.map { note ->
             if (note.isSelected) {
-                val updatedNote = note.copy(isPinned = 0, isSelected = false)
+                val updatedNote = note.copy(isPinned = 0, isSelected = false,isCheckable = false)
                 viewModel.updateNote(updatedNote)
                 updatedNote
             } else {
@@ -365,6 +370,7 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
     }
 
     private fun makeClickable(){
+        println("NOTES123: Make clickable")
         val list = notesList.map { note ->
             note.copy(isCheckable = true)
         }.toMutableList()
@@ -372,16 +378,17 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
         setNotes(list)
     }
 
-    private fun makeUnClickable(){
-        val list = notesList.map {
-            if(!isCheckable){
-                viewModel.updateNote(it.copy(isCheckable = false))
-            }
-            it.copy(isCheckable = false)
-
-        }.toMutableList()
-        setNotes(list)
-    }
+//    private fun makeUnClickable(){
+//        println("NOTES123: Make Unclickable")
+//        val list = notesList.map {
+//            if(!isCheckable){
+//                viewModel.updateNote(it.copy(isCheckable = false))
+//            }
+//            it.copy(isCheckable = false)
+//
+//        }.toMutableList()
+//        setNotes(list)
+//    }
 
 
     fun deleteDialog(context: Context){
