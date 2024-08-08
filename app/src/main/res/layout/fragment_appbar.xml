@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:background="@drawable/search_bar_background"
         android:iconifiedByDefault="false"
-        android:backgroundTint="#D5D1D1"
+        android:backgroundTint="#D9D5D5"
         android:queryBackground="@android:color/transparent"
         android:queryHint="Search Notes"
         app:layout_constraintBottom_toBottomOf="parent"

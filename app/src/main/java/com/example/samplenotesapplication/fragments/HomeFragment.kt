@@ -87,6 +87,14 @@ class HomeFragment : Fragment() {
             })
         }
 
+//        DELETE CONFIRMATION DIALOG OBSERVER
+        NotesAppViewModel.deleteConfirmation.observe(viewLifecycleOwner, Observer {
+            if(it){
+                println("DELETE ITEMS CLICKED")
+                adapter.deleteSelectedItem()
+                parentFragmentManager.popBackStack()
+            }
+        })
 
 
 //        SelectedNotes Observer
@@ -111,7 +119,11 @@ class HomeFragment : Fragment() {
 
 //        Delete Selected Item Observer
         NotesAppViewModel.deleteSelectedItems.observe(viewLifecycleOwner, Observer {
-            adapter.deleteSelectedItem()
+            if(it){
+                println("Dialog CALLED !")
+                adapter.deleteDialog(requireContext())
+
+            }
         })
 
 //        Pin Items Observer

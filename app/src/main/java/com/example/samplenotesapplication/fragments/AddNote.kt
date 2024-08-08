@@ -38,7 +38,7 @@ class AddNote(private var viewModel: NotesAppViewModel) : Fragment() {
         val title = view.findViewById<EditText>(R.id.title)
         val content = view.findViewById<EditText>(R.id.content)
         val date = view.findViewById<TextView>(R.id.date)
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss a")
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss a")
         val now = LocalDateTime.now()
         var time = now.format(formatter)
         time = "$time ${now.dayOfWeek.getDisplayName(java.time.format.TextStyle.FULL, java.util.Locale.getDefault())}"
@@ -57,7 +57,12 @@ class AddNote(private var viewModel: NotesAppViewModel) : Fragment() {
             val day = dateValues[2]
             val monthName = Months.MONTHS[dateValues[2].toInt()]
             val timeValues = newDateTime[1].split(":")
-            val newDateTimeFormat = "$day $monthName ${timeValues[0]}:${timeValues[1]} ${newDateTime[2]}"
+            val normalTime = if(timeValues[0].toInt()>12){
+                timeValues[0].toInt() - 12
+            } else {
+                timeValues[0].toInt()
+            }
+            val newDateTimeFormat = "$day $monthName ${normalTime}:${timeValues[1]} ${newDateTime[2]}"
             date.text = newDateTimeFormat
         }
         view.findViewById<ImageButton>(R.id.backNavigator).setOnClickListener {

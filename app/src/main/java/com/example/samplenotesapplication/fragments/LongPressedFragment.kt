@@ -41,7 +41,6 @@ class LongPressedFragment : Fragment() {
                 (R.id.deleteSelectedItems)->{
                     NotesAppViewModel.deleteSelectedItems.value = true
                     println("MENU ITEMS DELETE CLICKED")
-                    onDestroyView()
                     true
                 }
                 (R.id.pinSelectedNotes) -> {

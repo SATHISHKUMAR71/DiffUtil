@@ -1,6 +1,7 @@
 package com.example.samplenotesapplication.recyclerview
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
@@ -10,10 +11,14 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.annotation.MainThread
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.samplenotesapplication.R
@@ -32,6 +37,9 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
     private var pinnedList:MutableList<Int> = mutableListOf(2)
     private var notesList: MutableList<Note> = mutableListOf()
     private var selectedItemPos = 0
+    private var deleteList:MutableList<Note> = mutableListOf()
+    private lateinit var deleteDialog:AlertDialog
+    private var deleteConfirmation = false
     private var isCheckable = false
     private var isLongPressed = 0
     private var firstTimeLongPressed = 0
@@ -80,22 +88,27 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
             val month = date1[1].toInt()
             val year = date1[0].toInt()
             val monthName = Months.MONTHS[month-1]
-            var dateInfo = "$day $monthName ${time[0]}:${time[1]} $format"
+            val normalTime = if(time[0].toInt()>12){
+                time[0].toInt() - 12
+            } else {
+                time[0].toInt()
+            }
+            var dateInfo = "$day $monthName ${normalTime}:${time[1]} $format"
             if((currentMonth == month)&&(currentYear==year)&&(day==currentDay)){
-                editedDate = "Today ${time[0]}:${time[1]} $format"
+                editedDate = "Today ${normalTime}:${time[1]} $format"
             }
             else if ((currentMonth == month) && (abs(day-currentDay)<7)){
                 editedDate = if(abs(day-currentDay)==1){
-                    "Yesterday ${time[0]}:${time[1]} $format"
+                    "Yesterday ${normalTime}:${time[1]} $format"
                 } else{
-                    "${dateAndTime[3]} ${time[0]}:${time[1]} $format"
+                    "${dateAndTime[3]} ${normalTime}:${time[1]} $format"
                 }
             }
             else if(((currentMonth == month)&&(currentYear==year)) || (currentYear==year)){
                 editedDate = "$monthName $day"
             }
             else{
-                dateInfo = "$day $monthName, $year ${time[0]}:${time[1]} $format"
+                dateInfo = "$day $monthName, $year ${normalTime}:${time[1]} $format"
                 editedDate = "$monthName $day, $year"
             }
             date.text = editedDate
@@ -291,18 +304,21 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
     }
 
     fun deleteSelectedItem() {
-        val list = notesList.filter {
-            if(it.isSelected){
-                viewModel.deleteNote(it)
-                false
-            }
-            else{
-                true
-            }
-        }.toMutableList()
-        pinnedList = mutableListOf(2)
-        isLongPressed = 0
-        setNotes(list)
+            println("DELETE items checked")
+            val list = notesList.filter {
+                if(it.isSelected){
+
+                    viewModel.deleteNote(it)
+                    false
+                }
+                else{
+                    true
+                }
+            }.toMutableList()
+            pinnedList = mutableListOf(2)
+            isLongPressed = 0
+            setNotes(list)
+
     }
 
     fun pinSelectedItems() {
@@ -350,5 +366,24 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
 
         }.toMutableList()
         setNotes(list)
+    }
+
+
+    fun deleteDialog(context: Context){
+        val builder = AlertDialog.Builder(context)
+        builder.setTitle("Delete Items")
+        builder.setMessage("Are you sure you want to delete this selected items?")
+        builder.setPositiveButton("Yes"){dialog,which->
+            println("DELETE CONFIRMATION TRUE")
+            NotesAppViewModel.deleteConfirmation.value = true
+            dialog.dismiss()
+        }
+        builder.setNeutralButton("No"){dialog,which->
+            println("DELETE CONFIRMATION FALSE")
+            NotesAppViewModel.deleteConfirmation.value = false
+            dialog.dismiss()
+        }
+        deleteDialog = builder.create()
+        deleteDialog.show()
     }
 }

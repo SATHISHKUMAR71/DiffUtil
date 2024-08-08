@@ -17,6 +17,7 @@ class NotesAppViewModel(private val application: Application,private val noteRep
     var selectedNote = MutableLiveData<Note>()
     companion object{
         var query = MutableLiveData("")
+        var deleteConfirmation = MutableLiveData(false)
         var isPinned = MutableLiveData(0)
         var onBackPressed = MutableLiveData(false)
         var selectAllItem = MutableLiveData(false)
