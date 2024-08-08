@@ -22,4 +22,8 @@ class NoteRepository(private var noteDB: NotesDatabase) {
     fun getAllNotes(): LiveData<MutableList<Note>> {
         return noteDB.getNoteDao().getAllNotes()
     }
+
+    fun getNotesByQuery(query:String):LiveData<MutableList<Note>>{
+        return noteDB.getNoteDao().getNotesByQuery(query)
+    }
 }

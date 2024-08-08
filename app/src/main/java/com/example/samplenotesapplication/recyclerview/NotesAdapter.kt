@@ -48,7 +48,6 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss a")
         val now = LocalDateTime.now()
         val currentDate = now.format(formatter)
-        println(currentDate)
         val dateAndTime = currentDate.split(" ")
         val date = dateAndTime[0].split("-")
         currentTime = dateAndTime[1].split(":")
@@ -72,13 +71,11 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
             val title = findViewById<TextView>(R.id.titleNote)
             val content = findViewById<TextView>(R.id.contentNote)
             title.text = notesList[position].title
-            println("Created at: ${notesList[position].createdAt}")
             var editedDate = notesList[position].createdAt
             val dateAndTime = editedDate.split(" ")
             val date1 = dateAndTime[0].split("-")
             val time = dateAndTime[1].split(":")
             format = dateAndTime[2]
-            println(time)
             val day = date1[2].toInt()
             val month = date1[1].toInt()
             val year = date1[0].toInt()
@@ -96,7 +93,6 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
             }
             else if(((currentMonth == month)&&(currentYear==year)) || (currentYear==year)){
                 editedDate = "$monthName $day"
-                println(editedDate)
             }
             else{
                 dateInfo = "$day $monthName, $year ${time[0]}:${time[1]} $format"
@@ -205,7 +201,6 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
             this.setOnClickListener {
                 if((isLongPressed == 1) && (firstTimeLongPressed == 1)){
                     selectedItemPos = holder.adapterPosition
-                    println("ITEM CLICKED ${NotesAppViewModel.isPinned}")
                     if(notesList[holder.adapterPosition].isSelected){
                         notesList[holder.adapterPosition].isSelected = false
                         if(notesList[holder.adapterPosition].isPinned==1){
@@ -255,7 +250,6 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
     }
 
      fun onBackPressed() {
-        println("On Back Pressed")
          firstTimeLongPressed = 0
         val list = notesList.map {
             it.copy(isSelected = false)

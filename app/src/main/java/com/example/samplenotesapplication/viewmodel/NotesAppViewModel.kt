@@ -16,13 +16,13 @@ class NotesAppViewModel(private val application: Application,private val noteRep
 
     var selectedNote = MutableLiveData<Note>()
     companion object{
+        var query = MutableLiveData("")
         var isPinned = MutableLiveData(0)
         var onBackPressed = MutableLiveData(false)
         var selectAllItem = MutableLiveData(false)
         var pinItemsClicked = MutableLiveData(false)
         var deleteSelectedItems = MutableLiveData(false)
         fun setPinnedValues(list: List<Int>){
-            println("PIN OBSERVER CALLED $list")
             isPinned.value =  min(list)
         }
     }
@@ -53,5 +53,8 @@ class NotesAppViewModel(private val application: Application,private val noteRep
 
     fun setSelectedNote(note:Note){
         selectedNote.value = note
+    }
+    fun getNotesByQuery(query:String):LiveData<MutableList<Note>>{
+        return noteRepository.getNotesByQuery(query)
     }
 }

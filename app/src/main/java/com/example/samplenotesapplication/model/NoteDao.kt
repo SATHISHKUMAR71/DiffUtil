@@ -24,4 +24,6 @@ interface NoteDao {
     @Query("SELECT * FROM notes ORDER BY isPinned DESC, updatedAt DESC")
     fun getAllNotes():LiveData<MutableList<Note>>
 
+    @Query("SELECT * FROM notes WHERE title LIKE '%' || :query || '%' OR content LIKE '%' || :query || '%'")
+    fun getNotesByQuery(query:String):LiveData<MutableList<Note>>
 }
