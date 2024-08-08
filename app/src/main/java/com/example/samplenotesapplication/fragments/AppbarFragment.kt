@@ -23,6 +23,7 @@ class AppbarFragment : Fragment() {
     private lateinit var search:SearchView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        println("SEARCH ON CREATE")
     }
 
     override fun onCreateView(
@@ -52,5 +53,22 @@ class AppbarFragment : Fragment() {
         })
 
         return view
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        println("ON SAVED INSTANCE")
+    }
+    override fun onStop() {
+        super.onStop()
+        println("SEARCH ON STOP")
+    }
+    override fun onStart() {
+        super.onStart()
+        println("SEARCH ON START")
+    }
+    override fun onPause() {
+        super.onPause()
+        println("SEARCH ON PAUSE")
     }
 }

@@ -31,6 +31,16 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 class HomeFragment : Fragment() {
     private lateinit var appbarFragment: AppbarFragment
     private var searchActionPerformed = false
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        appbarFragment = AppbarFragment()
+        if(parentFragmentManager.findFragmentByTag("longFragmentEnabled")?.isVisible != true){
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainerMenu,appbarFragment)
+                .commit()
+        }
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -41,11 +51,6 @@ class HomeFragment : Fragment() {
         val rv = view.findViewById<RecyclerView>(R.id.notesRecyclerView)
         val viewModelFactory = NotesViewModelFactory(requireActivity().application, NoteRepository(NotesDatabase.getNoteDatabase(requireContext())))
         val viewModel = ViewModelProvider(this,viewModelFactory)[NotesAppViewModel::class.java]
-        appbarFragment = AppbarFragment()
-        parentFragmentManager.beginTransaction()
-            .replace(R.id.fragmentContainerMenu,appbarFragment)
-            .commit()
-
         (context as FragmentActivity).onBackPressedDispatcher.addCallback(viewLifecycleOwner,object:OnBackPressedCallback(true){
             override fun handleOnBackPressed() {
                 println("ON BACK PRESSED HOME")
@@ -146,7 +151,11 @@ class HomeFragment : Fragment() {
         val searchView = (appbarFragment.view?.findViewById<SearchView>(R.id.searchView))
         println(searchActionPerformed)
         println(searchView?.hasFocus())
-        if ((searchView?.hasFocus() == true)||(searchActionPerformed)) {
+        if(parentFragmentManager.findFragmentByTag("longFragmentEnabled")?.isVisible == true){
+            println("ELSE IF")
+            parentFragmentManager.popBackStack()
+        }
+        else if ((searchView?.hasFocus() == true)||(searchActionPerformed)) {
             println("IF")
             searchView?.setQuery("",false)
             val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -154,10 +163,10 @@ class HomeFragment : Fragment() {
             searchView?.clearFocus()
             searchActionPerformed = false
         }
-        else if(parentFragmentManager.findFragmentByTag("longFragmentEnabled")?.isVisible == true){
-            println("ELSE IF")
-            parentFragmentManager.popBackStack()
-        }
+//        else if(parentFragmentManager.findFragmentByTag("longFragmentEnabled")?.isVisible == true){
+//            println("ELSE IF")
+//            parentFragmentManager.popBackStack()
+//        }
         else {
             println("ELSE")
             requireActivity().finish()
