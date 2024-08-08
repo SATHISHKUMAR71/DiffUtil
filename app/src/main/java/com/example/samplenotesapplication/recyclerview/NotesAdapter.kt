@@ -228,10 +228,10 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
                 else{
                     val addNoteFragment = AddNote(viewModel)
                     addNoteFragment.arguments = Bundle().apply {
-                        putInt("id",notesList[position].id)
-                        putString("title",notesList[position].title)
+                        putInt("id",notesList[holder.adapterPosition].id)
+                        putString("title",notesList[holder.adapterPosition].title)
                         putString("date",dateInfo)
-                        putString("content",notesList[position].content)
+                        putString("content",notesList[holder.adapterPosition].content)
                     }
                     (context as FragmentActivity).supportFragmentManager.beginTransaction()
                         .replace(R.id.fragmentContainerView,addNoteFragment)

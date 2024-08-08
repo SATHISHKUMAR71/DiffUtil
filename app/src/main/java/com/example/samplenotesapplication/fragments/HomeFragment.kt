@@ -59,6 +59,7 @@ class HomeFragment : Fragment() {
         NotesAppViewModel.query.observe(viewLifecycleOwner, Observer {
             if(it == ""){
                 searchActionPerformed = false
+                println("GIVES ALL NOTES ")
                 viewModel.getAllNotes().observe(viewLifecycleOwner, Observer { getAll->
                     adapter.setNotes(getAll)
                 })
@@ -66,6 +67,7 @@ class HomeFragment : Fragment() {
             }
             else{
                 searchActionPerformed = true
+                println("GIVES QUERY NOTES $it")
                 viewModel.getNotesByQuery(it).observe(viewLifecycleOwner, Observer { note ->
                     adapter.setNotes(note)
                 })
@@ -73,9 +75,13 @@ class HomeFragment : Fragment() {
         })
 
 //        Read Notes Observer
-        viewModel.getAllNotes().observe(viewLifecycleOwner, Observer {
-            adapter.setNotes(it)
-        })
+        if(!searchActionPerformed){
+            viewModel.getAllNotes().observe(viewLifecycleOwner, Observer {
+                println("GET ALL NOTES CALLED")
+                adapter.setNotes(it)
+            })
+        }
+
 
 
 //        SelectedNotes Observer
@@ -153,6 +159,7 @@ class HomeFragment : Fragment() {
             parentFragmentManager.popBackStack()
         }
         else {
+            println("ELSE")
             requireActivity().finish()
         }
     }
