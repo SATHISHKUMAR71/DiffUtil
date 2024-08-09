@@ -13,5 +13,6 @@ data class Note(
     var updatedAt:String,
     var isPinned:Int,
     var isSelected:Boolean,
-    var isCheckable:Boolean
+    var isCheckable:Boolean,
+    var isHighlighted:Boolean
 )

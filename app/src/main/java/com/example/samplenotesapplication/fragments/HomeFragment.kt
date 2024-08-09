@@ -7,20 +7,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.CheckBox
 import android.widget.SearchView
 import androidx.activity.OnBackPressedCallback
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentManager
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.DiffUtil.Callback
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.samplenotesapplication.R
-import com.example.samplenotesapplication.model.Note
-
 import com.example.samplenotesapplication.recyclerview.NotesAdapter
 import com.example.samplenotesapplication.model.NotesDatabase
 import com.example.samplenotesapplication.repository.NoteRepository
@@ -31,47 +26,63 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 class HomeFragment : Fragment() {
     private lateinit var appbarFragment: AppbarFragment
     private var searchActionPerformed = false
-
+    private lateinit var view:View
+    private lateinit var fab:FloatingActionButton
+    private var query = ""
+    private var i = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        appbarFragment = AppbarFragment()
-        if(parentFragmentManager.findFragmentByTag("longFragmentEnabled")?.isVisible != true){
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainerMenu,appbarFragment,"appbarFragment")
-                .commit()
-        }
     }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
 
-        val view = inflater.inflate(R.layout.fragment_home, container, false)
+        view = inflater.inflate(R.layout.fragment_home, container, false)
         val rv = view.findViewById<RecyclerView>(R.id.notesRecyclerView)
         val viewModelFactory = NotesViewModelFactory(requireActivity().application, NoteRepository(NotesDatabase.getNoteDatabase(requireContext())))
         val viewModel = ViewModelProvider(this,viewModelFactory)[NotesAppViewModel::class.java]
+
+//        Floating Action Button On Click Listener
+        fab = view.findViewById(R.id.addButton)
+        fab.apply {
+            setOnClickListener {
+                parentFragmentManager.beginTransaction()
+                    .addToBackStack("Add Note")
+                    .replace(R.id.fragmentContainerView,AddNote(viewModel))
+                    .commit()
+            }
+        }
+        appbarFragment = AppbarFragment(fab)
+        if(parentFragmentManager.findFragmentByTag("longFragmentEnabled")?.isVisible != true){
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainerMenu,appbarFragment,"appbarFragment")
+                .commit()
+        }
         (context as FragmentActivity).onBackPressedDispatcher.addCallback(viewLifecycleOwner,object:OnBackPressedCallback(true){
             override fun handleOnBackPressed() {
                 handleBackPress()
             }
         })
-        val adapter = NotesAdapter(viewModel)
 
+        val adapter = NotesAdapter(viewModel,this)
 //        SearchView Observer
+
 
         NotesAppViewModel.query.observe(viewLifecycleOwner, Observer {
             if(it == ""){
-                searchActionPerformed = false
-                println("GIVES ALL NOTES ")
                 viewModel.getAllNotes().observe(viewLifecycleOwner, Observer { getAll->
+                    println("GetAll Notes Observer Called 1")
                     adapter.setNotes(getAll)
                 })
             }
             else{
                 searchActionPerformed = true
-                println("QUERY NOTES")
                 viewModel.getNotesByQuery(it).observe(viewLifecycleOwner, Observer { note ->
+                    println("GetAll Notes Query Observer Called 1")
+                    query = it
                     adapter.setNotesQuery(note,it)
                 })
             }
@@ -80,7 +91,6 @@ class HomeFragment : Fragment() {
 //        Read Notes Observer
         if(!searchActionPerformed){
             viewModel.getAllNotes().observe(viewLifecycleOwner, Observer {
-                println("GET ALL NOTES CALLED")
                 adapter.setNotes(it)
             })
         }
@@ -88,6 +98,7 @@ class HomeFragment : Fragment() {
 //        DELETE CONFIRMATION DIALOG OBSERVER
         NotesAppViewModel.deleteConfirmation.observe(viewLifecycleOwner, Observer {
             if(it){
+                println("Delete Observer Called 2")
                 adapter.deleteSelectedItem()
                 parentFragmentManager.popBackStack()
             }
@@ -96,28 +107,33 @@ class HomeFragment : Fragment() {
 
 //        SelectedNotes Observer
         viewModel.selectedNote.observe(viewLifecycleOwner, Observer {
+            println("Selected Note Observer Called 3")
             adapter.selectedItem()
         })
 
 //        Select All Items Observer
         NotesAppViewModel.selectAllItem.observe(viewLifecycleOwner, Observer {
+
             if(it){
+                println("Selected All Item Observer Called 4")
                 adapter.selectAllItems()
             }
             else{
+                println("UnSelect All Item Observer Called 4")
                 adapter.unSelectAllItems()
             }
         })
 
 //        On BackPressed Observer
         NotesAppViewModel.onBackPressed.observe(viewLifecycleOwner, Observer {
+            println("Back Pressed Observer Called 5")
             adapter.onBackPressed()
         })
 
 //        Delete Selected Item Observer
         NotesAppViewModel.deleteSelectedItems.observe(viewLifecycleOwner, Observer {
+            println("Delete Selected Item Observer Called 6 $it")
             if(it){
-                println("Dialog CALLED !")
                 adapter.deleteDialog(requireContext())
             }
         })
@@ -125,9 +141,11 @@ class HomeFragment : Fragment() {
 //        Pin Items Observer
         NotesAppViewModel.pinItemsClicked.observe(viewLifecycleOwner, Observer {
             if(NotesAppViewModel.isPinned.value== 0){
+                println("Pin Item Observer Called 7")
                 adapter.pinSelectedItems()
             }
             else{
+                println("Unpin Item Observer Called 7")
                 adapter.unpinSelectedItems()
             }
         })
@@ -137,16 +155,6 @@ class HomeFragment : Fragment() {
         rv.adapter = adapter
         rv.layoutManager = LinearLayoutManager(context)
 
-
-//        Floating Action Button On Click Listener
-        view.findViewById<FloatingActionButton>(R.id.addButton).apply {
-            setOnClickListener {
-                parentFragmentManager.beginTransaction()
-                    .addToBackStack("Add Note")
-                    .replace(R.id.fragmentContainerView,AddNote(viewModel))
-                    .commit()
-            }
-        }
         return view
     }
 
@@ -157,12 +165,11 @@ class HomeFragment : Fragment() {
 
         // Clear focus and hide keyboard if necessary
         val searchView = (appbarFragment.view?.findViewById<SearchView>(R.id.searchView))
-
-
         if(parentFragmentManager.findFragmentByTag("longFragmentEnabled")?.isVisible == true){
-
             parentFragmentManager.popBackStack()
         }
+
+
         else if ((searchView?.hasFocus() == true)||(searchActionPerformed)) {
 
             searchView?.setQuery("",false)
@@ -171,12 +178,7 @@ class HomeFragment : Fragment() {
             searchView?.clearFocus()
             searchActionPerformed = false
         }
-//        else if(parentFragmentManager.findFragmentByTag("longFragmentEnabled")?.isVisible == true){
-//            println("ELSE IF")
-//            parentFragmentManager.popBackStack()
-//        }
         else {
-
             requireActivity().finish()
         }
     }

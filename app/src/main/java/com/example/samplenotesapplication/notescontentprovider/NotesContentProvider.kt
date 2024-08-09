@@ -90,7 +90,8 @@ class NotesContentProvider : ContentProvider() {
             isCheckable = contentValues?.getAsBoolean(ContractNotes.isCheckable)?:false,
             isPinned = contentValues?.getAsInteger(ContractNotes.COLUMN_IS_PINNED)?:0,
             title = contentValues?.getAsString(ContractNotes.COLUMN_TITLE)?:"",
-            updatedAt = contentValues?.getAsString(ContractNotes.COLUMN_UPDATED_AT)?:""
+            updatedAt = contentValues?.getAsString(ContractNotes.COLUMN_UPDATED_AT)?:"",
+            isHighlighted = false
         ))
         context?.contentResolver?.notifyChange(uri,null)
         return Uri.withAppendedPath(CONTENT_URI,id.toString())
@@ -127,7 +128,8 @@ class NotesContentProvider : ContentProvider() {
                         isCheckable = contentValues?.getAsBoolean(ContractNotes.isCheckable)?:false,
                         isPinned = contentValues?.getAsInteger(ContractNotes.COLUMN_IS_PINNED)?:0,
                         title = contentValues?.getAsString(ContractNotes.COLUMN_TITLE)?:"",
-                        updatedAt = contentValues?.getAsString(ContractNotes.COLUMN_UPDATED_AT)?:""
+                        updatedAt = contentValues?.getAsString(ContractNotes.COLUMN_UPDATED_AT)?:"",
+                        isHighlighted = false
                     ))
                 count =1
             }

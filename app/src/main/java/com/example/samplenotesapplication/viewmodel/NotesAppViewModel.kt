@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.samplenotesapplication.model.Note
 import com.example.samplenotesapplication.repository.NoteRepository
 import kotlinx.coroutines.launch
-import java.util.Collections.max
 import java.util.Collections.min
 
 class NotesAppViewModel(private val application: Application,private val noteRepository: NoteRepository):AndroidViewModel(application) {

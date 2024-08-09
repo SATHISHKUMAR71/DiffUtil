@@ -17,6 +17,7 @@
             android:id="@+id/longPressedToolbar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            app:navigationIcon="@drawable/back_arrow_white"
             app:title="Notes"
             app:menu="@menu/long_pressed_menu"
             android:background="?attr/colorPrimaryDark"

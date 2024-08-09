@@ -4,7 +4,9 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-@Database(entities = [Note::class], version = 1)
+import com.example.samplenotesapplication.Migration_1_2
+
+@Database(entities = [Note::class], version = 2)
 abstract class NotesDatabase:RoomDatabase() {
     abstract fun getNoteDao():NoteDao
 
@@ -17,6 +19,7 @@ abstract class NotesDatabase:RoomDatabase() {
                     context.applicationContext,
                     NotesDatabase::class.java,
                     "notes_app_database")
+                    .addMigrations(Migration_1_2)
                     .build()
                 INSTANCE = instance
                 instance

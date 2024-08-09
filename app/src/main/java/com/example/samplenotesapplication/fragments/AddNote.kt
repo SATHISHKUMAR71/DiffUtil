@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageButton
+import android.widget.SearchView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -26,7 +27,8 @@ class AddNote(private var viewModel: NotesAppViewModel) : Fragment() {
     private var noteId=0
     private var note: Note? = null
     override fun onCreate(savedInstanceState: Bundle?) {
-        requireActivity().findViewById<FragmentContainerView>(R.id.fragmentContainerMenu).visibility = View.GONE
+        requireActivity().findViewById<FragmentContainerView>(R.id.fragmentContainerMenu).apply{
+            visibility = View.GONE }
         super.onCreate(savedInstanceState)
     }
 
@@ -50,8 +52,7 @@ class AddNote(private var viewModel: NotesAppViewModel) : Fragment() {
                 content.setText(it.getString("content"))
                 date.text = (it.getString("date"))
                 noteId = it.getInt("id")
-                note = Note(noteId,title.text.toString(),content.text.toString(),time,time,arguments?.getInt("isPinned")?:0,false,false)
-                println("Notes123: $note")
+                note = Note(noteId,title.text.toString(),content.text.toString(),time,time,arguments?.getInt("isPinned")?:0,false,false,false)
             }
         }
         else{
@@ -73,17 +74,16 @@ class AddNote(private var viewModel: NotesAppViewModel) : Fragment() {
         }
         view.findViewById<ImageButton>(R.id.save).setOnClickListener {
             if(arguments==null){
-                note = Note(0,title.text.toString(),content.text.toString(),time,time,0,false,false)
+                note = Note(0,title.text.toString(),content.text.toString(),time,time,0,false,false,false)
 //                INSERT NOTE
                 if((title.text.toString()!="")||(content.text.toString()!="")){
                     note?.let {
-                        println("TIme: $time")
                         viewModel.addNote(it)
                     }
                 }
             }
             else{
-                note = Note(noteId,title.text.toString(),content.text.toString(),time,time,0,false,false)
+                note = Note(noteId,title.text.toString(),content.text.toString(),time,time,0,false,false,false)
 //                UPDATE NOTE
                 if((title.text.toString()!="")||(content.text.toString()!="")) {
                     note?.let {
@@ -111,10 +111,10 @@ class AddNote(private var viewModel: NotesAppViewModel) : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        requireActivity().findViewById<FragmentContainerView>(R.id.fragmentContainerMenu).visibility = View.VISIBLE
+        requireActivity().findViewById<FragmentContainerView>(R.id.fragmentContainerMenu).apply{
+            visibility = View.VISIBLE }
     }
     override fun onDestroy() {
         super.onDestroy()
-        println("On Fragment Destroy")
     }
 }

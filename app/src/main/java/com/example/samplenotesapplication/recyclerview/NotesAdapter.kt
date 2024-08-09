@@ -29,12 +29,13 @@ import com.example.samplenotesapplication.fragments.HomeFragment
 import com.example.samplenotesapplication.fragments.LongPressedFragment
 import com.example.samplenotesapplication.model.Note
 import com.example.samplenotesapplication.viewmodel.NotesAppViewModel
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.math.abs
 
 
-class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapter<NotesAdapter.NotesViewHolder>() {
+class NotesAdapter(private val viewModel: NotesAppViewModel,private val fragment: HomeFragment):RecyclerView.Adapter<NotesAdapter.NotesViewHolder>() {
 
     private var pinnedList:MutableList<Int> = mutableListOf(2)
     private var notesList: MutableList<Note> = mutableListOf()
@@ -49,7 +50,6 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
     private var isCheckable = false
     private var isLongPressed = 0
     private var firstTimeLongPressed = 0
-    private lateinit var originalBackgroundColor:Drawable
     private lateinit var currentTime:List<String>
     private var currentDay = 0
     private var format = ""
@@ -75,17 +75,14 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
         return notesList.size
     }
 
-
-
     override fun onBindViewHolder(holder: NotesViewHolder, position: Int) {
         holder.itemView.apply {
             selectedItemPos = holder.adapterPosition
             date = findViewById(R.id.dateNote)
             title = findViewById(R.id.titleNote)
             content = findViewById(R.id.contentNote)
-            if(isHighlight && query.isNotEmpty()){
-                println("IS HIGHLIGHT CALLED")
-                println("IS HIGHLIGHT CALLED query: $query")
+            if(notesList[position].isHighlighted && query.isNotEmpty()){
+                notesList[position].isHighlighted = false
                 val titleContent = notesList[position].title
                 val bodyContent = notesList[position].content
                 val spannableTitle = SpannableString(titleContent)
@@ -94,7 +91,7 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
                 var startIndex = titleContent.indexOf(query, ignoreCase = true)
                 while (startIndex >= 0) {
                     val endIndex = startIndex + query.length
-                    println("IS HIGHLIGHT CALLED")
+
                     // Ensure indices are within the bounds of the text length
                     if (startIndex >= 0 && endIndex <= titleContent.length) {
                         // Apply a ForegroundColorSpan to highlight the text
@@ -110,7 +107,7 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
                 }
                 while (startContentIndex >= 0) {
                     val endContentIndex = startContentIndex + query.length
-                    println("IS HIGHLIGHT CALLED")
+
                     // Ensure indices are within the bounds of the text length
                     if (startContentIndex >= 0 && endContentIndex <= bodyContent.length) {
                         // Apply a ForegroundColorSpan to highlight the text
@@ -126,12 +123,16 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
                 }
                 title.text = spannableTitle
                 content.text = spannableContent
+//                notifyDataSetChanged()
             }
             else{
                 title.text = notesList[position].title
                 content.text = notesList[position].content
+//                notifyDataSetChanged()
             }
 
+
+//            Update the Date Code Started
             var editedDate = notesList[position].createdAt
             val dateAndTime = editedDate.split(" ")
             val date1 = dateAndTime[0].split("-")
@@ -165,8 +166,13 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
                 editedDate = "$monthName $day, $year"
             }
             date.text = editedDate
+
+//            Update the Date Code Finished
+
 //            9 AUG COMMENTED
 //            content.text = notesList[position].content
+
+//            CheckBox Logic Started
             findViewById<CheckBox>(R.id.isChecked).apply {
                 setOnClickListener {
                     selectedItemPos = holder.adapterPosition
@@ -197,18 +203,27 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
                     viewModel.setSelectedNote(notesList[holder.adapterPosition])
                 }
             }
+
+//            CheckBox Logic finished
+
+//            Push Pin Visibility
             if(notesList[holder.adapterPosition].isPinned==1){
                 findViewById<ImageView>(R.id.pushPin).visibility = View.VISIBLE
             }
             else{
                 findViewById<ImageView>(R.id.pushPin).visibility = View.INVISIBLE
             }
+
+//            Check Box Check UnCheck Items
             if(notesList[position].isCheckable){
                 findViewById<CheckBox>(R.id.isChecked).visibility = View.VISIBLE
             }
             else{
                 findViewById<CheckBox>(R.id.isChecked).visibility = View.INVISIBLE
             }
+
+
+//          Background Color change Based on isSelected variable
             if(!notesList[position].isSelected){
                 background = ContextCompat.getDrawable(context,R.drawable.normal_background_drawable)
                 findViewById<CheckBox>(R.id.isChecked).apply {
@@ -221,6 +236,8 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
                     isChecked = true
                 }
             }
+
+//            extend and shrink item views
             if(!((title.text == "") && (content.text==""))){
                 if (title.text == "") {
                     title.visibility = View.GONE
@@ -233,15 +250,19 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
                     content.visibility = View.VISIBLE
                 }
             }
-            originalBackgroundColor = background
+
+
+
+//            Long On Click Listener
             setOnLongClickListener {
                 selectedItemPos = holder.adapterPosition
-                println(notesList.size)
                 if(isLongPressed==0){
                     makeClickable()
+                    firstTimeLongPressed = 1
+
                     isCheckable = true
                     isLongPressed = 1
-                    println(notesList.size)
+
                     if(notesList[selectedItemPos].isSelected){
                         notesList[selectedItemPos].isSelected = false
                         selectCount -=1
@@ -266,6 +287,7 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
                     }
                     NotesAppViewModel.setPinnedValues(pinnedList)
                     viewModel.setSelectedNote(notesList[selectedItemPos])
+                    fragment.view?.findViewById<FloatingActionButton>(R.id.addButton)?.hide()
                     (context as FragmentActivity).supportFragmentManager.beginTransaction()
                         .replace(R.id.fragmentContainerMenu,LongPressedFragment(),"longFragmentEnabled")
                         .addToBackStack("Long pressed by the user")
@@ -274,12 +296,16 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
                 false
             }
 
+
+
 //            Recycler view Item Click Listener
             this.setOnClickListener {
                 selectedItemPos = holder.adapterPosition
-                if((isLongPressed == 1)){
+                if((isLongPressed == 1) && (firstTimeLongPressed == 1)){
+
                     if(notesList[selectedItemPos].isSelected){
                         notesList[selectedItemPos].isSelected = false
+
                         selectCount -=1
                         NotesAppViewModel.selectCount.value = selectCount
                         if(notesList[selectedItemPos].isPinned==1){
@@ -288,6 +314,10 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
                         else{
                             pinnedList.remove(0)
                         }
+                    }
+                    else if((isLongPressed == 1) && (firstTimeLongPressed == 0)){
+                        firstTimeLongPressed = 1
+//                        viewModel.setSelectedNote(notesList[selectedItemPos])
                     }
                     else{
                         notesList[selectedItemPos].isSelected = true
@@ -306,6 +336,7 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
                 else{
                     val addNoteFragment = AddNote(viewModel)
                     addNoteFragment.arguments = Bundle().apply {
+
                         putInt("id",notesList[selectedItemPos].id)
                         putString("title",notesList[selectedItemPos].title)
                         putString("date",dateInfo)
@@ -322,28 +353,37 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
     }
 
     fun setNotes(notes:MutableList<Note>){
-        println("SET NOTES CALLED")
-        isHighlight = false
+
         val diffUtil = NotesDiffUtil(notesList,notes)
         val diffResults = DiffUtil.calculateDiff(diffUtil)
         notesList = notes
         diffResults.dispatchUpdatesTo(this)
-        notifyDataSetChanged()
     }
 
     fun setNotesQuery(notes:MutableList<Note>,query1: String){
-        println("SET QUERY NOTES CALLED")
+
         query = query1
-        isHighlight = true
-        val diffUtil = NotesDiffUtil(notesList,notes)
-        val diffResults = DiffUtil.calculateDiff(diffUtil)
-        notesList = notes
-        diffResults.dispatchUpdatesTo(this)
-        notifyDataSetChanged()
+
+        if(query1 ==""){
+
+//            notifyDataSetChanged()
+            val list = notes.map {
+                it.copy(isHighlighted = true)
+            }.toMutableList()
+            setNotes(list)
+        }
+        else{
+
+            val list = notes.map {
+                it.copy(isHighlighted = true)
+            }.toMutableList()
+            setNotes(list)
+        }
     }
 
      fun onBackPressed() {
          firstTimeLongPressed = 0
+         isLongPressed = 0
          selectCount = 0
          NotesAppViewModel.selectCount.value = selectCount
         val list = notesList.map {
@@ -351,9 +391,9 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
         }.toMutableList()
          isCheckable = false
         setNotes(list)
-        isLongPressed = 0
          pinnedList = mutableListOf(2)
          NotesAppViewModel.isPinned.value = 0
+         fragment.view?.findViewById<FloatingActionButton>(R.id.addButton)?.show()
 //         makeUnClickable()
     }
 
@@ -377,7 +417,6 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
             NotesAppViewModel.setPinnedValues(pinnedList)
             it.copy(isSelected = true)
         }.toMutableList()
-        println("NOTES123: SELECTED")
         setNotes(list)
     }
 
@@ -387,46 +426,49 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
         val list = notesList.map {
             it.copy(isSelected = false)
         }.toMutableList()
-        println("NOTES123: UNSELECTED")
+
         pinnedList = mutableListOf(2)
         NotesAppViewModel.setPinnedValues(pinnedList)
         setNotes(list)
     }
 
     fun deleteSelectedItem() {
-            val list = notesList.filter {
-                if(it.isSelected){
-                    viewModel.deleteNote(it)
-                    false
-                }
-                else{
-                    true
-                }
-            }.toMutableList()
-            pinnedList = mutableListOf(2)
-            isLongPressed = 0
-            setNotes(list)
+        val newNotesList = notesList.filter {
+            !it.isSelected
+        }.toMutableList()
+
+        // Handle actual deletion
+        notesList.filter { it.isSelected }.forEach {
+            viewModel.deleteNote(it)
+        }
+        pinnedList = mutableListOf(2)
+        isLongPressed = 0
+        setNotes(newNotesList)
 
     }
 
     fun pinSelectedItems() {
-        println("NOTES123: PIN CALLED")
         var i=0
-        val list = notesList.map { note ->
-            if (note.isSelected) {
-                val updatedNote = note.copy(isPinned = 1, isSelected = false,isCheckable = false)
-                viewModel.updateNote(updatedNote)
-                updatedNote
-            } else {
-                note
-            }
-        }.toMutableList()
-        isLongPressed = 0
-        setNotes(list)
+        val isSelectedNotes = notesList.filter { it.isSelected }
+        isSelectedNotes.forEach { note ->
+            val updateNote = note.copy(isPinned = 1, isSelected = false, isCheckable = false)
+            viewModel.updateNote(updateNote)
+        }
+//
+//
+//            if (note.isSelected) {
+//                val updatedNote = note.copy(isPinned = 1, isSelected = false,isCheckable = false)
+//                viewModel.updateNote(updatedNote)
+//                updatedNote
+//            } else {
+//                note
+//            }
+//        }.toMutableList()
+//        isLongPressed = 0
+//        setNotes(list)
     }
 
     fun unpinSelectedItems() {
-        println("NOTES123: UNPIN CALLED")
         var i=0
         val list = notesList.map { note ->
             if (note.isSelected) {
@@ -442,26 +484,13 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
     }
 
     private fun makeClickable(){
-        println("NOTES123: Make clickable")
+
         val list = notesList.map { note ->
             note.copy(isCheckable = true)
         }.toMutableList()
         isLongPressed = 0
         setNotes(list)
     }
-
-//    private fun makeUnClickable(){
-//        println("NOTES123: Make Unclickable")
-//        val list = notesList.map {
-//            if(!isCheckable){
-//                viewModel.updateNote(it.copy(isCheckable = false))
-//            }
-//            it.copy(isCheckable = false)
-//
-//        }.toMutableList()
-//        setNotes(list)
-//    }
-
 
     fun deleteDialog(context: Context){
         val builder = AlertDialog.Builder(context)
@@ -476,12 +505,12 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
 //        builder.setMessage("Delete $selectCount items?")
         builder.setView(customView)
         builder.setPositiveButton(null){dialog,_->
-            println("DELETE CONFIRMATION TRUE")
+
             NotesAppViewModel.deleteConfirmation.value = true
             dialog.dismiss()
         }
         builder.setNeutralButton(null){dialog,_->
-            println("DELETE CONFIRMATION FALSE")
+
             NotesAppViewModel.deleteConfirmation.value = false
             dialog.dismiss()
         }
@@ -495,7 +524,7 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
             customView.findViewById<Button>(R.id.positiveBtn).setOnClickListener {
                 // Trigger the dialog's positive action
                 deleteDialog.getButton(AlertDialog.BUTTON_POSITIVE).performClick()
-                println("DELETE CONFIRMATION TRUE")
+
                 NotesAppViewModel.deleteConfirmation.value = true
             }
         }
@@ -506,7 +535,7 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
             customView.findViewById<Button>(R.id.negativeBtn).setOnClickListener {
                 // Trigger the dialog's positive action
                 deleteDialog.getButton(AlertDialog.BUTTON_NEGATIVE).performClick()
-                println("DELETE CONFIRMATION FALSE")
+
                 NotesAppViewModel.deleteConfirmation.value = false
             }
         }

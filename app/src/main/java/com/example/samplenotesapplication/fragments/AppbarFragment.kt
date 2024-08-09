@@ -17,13 +17,13 @@ import com.example.samplenotesapplication.repository.NoteRepository
 import com.example.samplenotesapplication.viewmodel.NotesAppViewModel
 import com.example.samplenotesapplication.viewmodel.NotesViewModelFactory
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 
-class AppbarFragment : Fragment() {
+class AppbarFragment(val fab:FloatingActionButton) : Fragment() {
     private lateinit var search:SearchView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        println("SEARCH ON CREATE")
     }
 
     override fun onCreateView(
@@ -33,42 +33,53 @@ class AppbarFragment : Fragment() {
         // Inflate the layout for this fragment
 
         val view =  inflater.inflate(R.layout.fragment_appbar, container, false)
-        search = view.findViewById<SearchView>(R.id.searchView)
+        search = view.findViewById(R.id.searchView)
+        if(NotesAppViewModel.query.value?.isEmpty()==false){
+            println("ON QUERY CHANGED isEmpty")
+            search.setQuery(NotesAppViewModel.query.value?:"",true)
+        }
         search.isFocusable = false
         search.isFocusableInTouchMode = false
+
         search.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
             override fun onQueryTextSubmit(query: String?): Boolean {
-                println("ON QUERY TEXT SUBMIT $query")
+                println("ON QUERY CHANGED Submit")
                 NotesAppViewModel.query.value = query
                 val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 imm.hideSoftInputFromWindow(search.windowToken, 0)
                 return true
             }
-
             override fun onQueryTextChange(newText: String?): Boolean {
+                println("ON QUERY CHANGED Text Change")
                 NotesAppViewModel.query.value = newText
-                println("ON QUERY TEXT CHANGE")
                 return true
             }
         })
-
+        search.setOnQueryTextFocusChangeListener { _, hasFocus ->
+            if (hasFocus){
+                fab.visibility = View.GONE
+            }
+            else{
+                fab.show()
+            }
+        }
         return view
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        println("ON SAVED INSTANCE")
     }
     override fun onStop() {
         super.onStop()
-        println("SEARCH ON STOP")
     }
     override fun onStart() {
         super.onStart()
-        println("SEARCH ON START")
+    }
+
+    override fun onResume() {
+        super.onResume()
     }
     override fun onPause() {
         super.onPause()
-        println("SEARCH ON PAUSE")
     }
 }
