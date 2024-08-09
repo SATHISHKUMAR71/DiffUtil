@@ -70,8 +70,9 @@ class HomeFragment : Fragment() {
             }
             else{
                 searchActionPerformed = true
+                println("QUERY NOTES")
                 viewModel.getNotesByQuery(it).observe(viewLifecycleOwner, Observer { note ->
-                    adapter.setNotes(note)
+                    adapter.setNotesQuery(note,it)
                 })
             }
         })

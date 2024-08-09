@@ -5,6 +5,9 @@ import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,9 +21,11 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import androidx.room.Query
 import com.example.samplenotesapplication.R
 import com.example.samplenotesapplication.constants.Months
 import com.example.samplenotesapplication.fragments.AddNote
+import com.example.samplenotesapplication.fragments.HomeFragment
 import com.example.samplenotesapplication.fragments.LongPressedFragment
 import com.example.samplenotesapplication.model.Note
 import com.example.samplenotesapplication.viewmodel.NotesAppViewModel
@@ -33,8 +38,13 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
 
     private var pinnedList:MutableList<Int> = mutableListOf(2)
     private var notesList: MutableList<Note> = mutableListOf()
+    private var isHighlight = false
+    private var query = ""
     private var selectedItemPos = 0
     private var selectCount = 0
+    private lateinit var title: TextView
+    private lateinit var date:TextView
+    private lateinit var content: TextView
     private lateinit var deleteDialog:AlertDialog
     private var isCheckable = false
     private var isLongPressed = 0
@@ -70,10 +80,58 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
     override fun onBindViewHolder(holder: NotesViewHolder, position: Int) {
         holder.itemView.apply {
             selectedItemPos = holder.adapterPosition
-            val date = findViewById<TextView>(R.id.dateNote)
-            val title = findViewById<TextView>(R.id.titleNote)
-            val content = findViewById<TextView>(R.id.contentNote)
-            title.text = notesList[position].title
+            date = findViewById(R.id.dateNote)
+            title = findViewById(R.id.titleNote)
+            content = findViewById(R.id.contentNote)
+            if(isHighlight && query.isNotEmpty()){
+                println("IS HIGHLIGHT CALLED")
+                println("IS HIGHLIGHT CALLED query: $query")
+                val titleContent = notesList[position].title
+                val bodyContent = notesList[position].content
+                val spannableTitle = SpannableString(titleContent)
+                val spannableContent = SpannableString(bodyContent)
+                var startContentIndex = bodyContent.indexOf(query, ignoreCase = true)
+                var startIndex = titleContent.indexOf(query, ignoreCase = true)
+                while (startIndex >= 0) {
+                    val endIndex = startIndex + query.length
+                    println("IS HIGHLIGHT CALLED")
+                    // Ensure indices are within the bounds of the text length
+                    if (startIndex >= 0 && endIndex <= titleContent.length) {
+                        // Apply a ForegroundColorSpan to highlight the text
+                        spannableTitle.setSpan(
+                            ForegroundColorSpan(Color.argb(255,255,20,20)), // You can choose any color
+                            startIndex,
+                            endIndex,
+                            Spannable.SPAN_INCLUSIVE_INCLUSIVE
+                        )
+                    }
+                    // Find the next occurrence of the query text
+                    startIndex = titleContent.indexOf(query, endIndex, ignoreCase = true)
+                }
+                while (startContentIndex >= 0) {
+                    val endContentIndex = startContentIndex + query.length
+                    println("IS HIGHLIGHT CALLED")
+                    // Ensure indices are within the bounds of the text length
+                    if (startContentIndex >= 0 && endContentIndex <= bodyContent.length) {
+                        // Apply a ForegroundColorSpan to highlight the text
+                        spannableContent.setSpan(
+                            ForegroundColorSpan(Color.argb(255,255,20,10)), // You can choose any color
+                            startContentIndex,
+                            endContentIndex,
+                            Spannable.SPAN_INCLUSIVE_INCLUSIVE
+                        )
+                    }
+                    // Find the next occurrence of the query text
+                    startContentIndex = bodyContent.indexOf(query, endContentIndex, ignoreCase = true)
+                }
+                title.text = spannableTitle
+                content.text = spannableContent
+            }
+            else{
+                title.text = notesList[position].title
+                content.text = notesList[position].content
+            }
+
             var editedDate = notesList[position].createdAt
             val dateAndTime = editedDate.split(" ")
             val date1 = dateAndTime[0].split("-")
@@ -107,7 +165,8 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
                 editedDate = "$monthName $day, $year"
             }
             date.text = editedDate
-            content.text = notesList[position].content
+//            9 AUG COMMENTED
+//            content.text = notesList[position].content
             findViewById<CheckBox>(R.id.isChecked).apply {
                 setOnClickListener {
                     selectedItemPos = holder.adapterPosition
@@ -177,15 +236,17 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
             originalBackgroundColor = background
             setOnLongClickListener {
                 selectedItemPos = holder.adapterPosition
+                println(notesList.size)
                 if(isLongPressed==0){
                     makeClickable()
                     isCheckable = true
                     isLongPressed = 1
-                    if(notesList[holder.adapterPosition].isSelected){
-                        notesList[holder.adapterPosition].isSelected = false
+                    println(notesList.size)
+                    if(notesList[selectedItemPos].isSelected){
+                        notesList[selectedItemPos].isSelected = false
                         selectCount -=1
                         NotesAppViewModel.selectCount.value = selectCount
-                        if(notesList[holder.adapterPosition].isPinned==1){
+                        if(notesList[selectedItemPos].isPinned==1){
                             pinnedList.remove(1)
                         }
                         else{
@@ -195,8 +256,8 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
                     else{
                         selectCount+=1
                         NotesAppViewModel.selectCount.value = selectCount
-                        notesList[holder.adapterPosition].isSelected = true
-                        if(notesList[holder.adapterPosition].isPinned==1){
+                        notesList[selectedItemPos].isSelected = true
+                        if(notesList[selectedItemPos].isPinned==1){
                             pinnedList.add(1)
                         }
                         else{
@@ -204,7 +265,7 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
                         }
                     }
                     NotesAppViewModel.setPinnedValues(pinnedList)
-                    viewModel.setSelectedNote(notesList[holder.adapterPosition])
+                    viewModel.setSelectedNote(notesList[selectedItemPos])
                     (context as FragmentActivity).supportFragmentManager.beginTransaction()
                         .replace(R.id.fragmentContainerMenu,LongPressedFragment(),"longFragmentEnabled")
                         .addToBackStack("Long pressed by the user")
@@ -215,13 +276,13 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
 
 //            Recycler view Item Click Listener
             this.setOnClickListener {
-                if((isLongPressed == 1) && (firstTimeLongPressed == 1)){
-                    selectedItemPos = holder.adapterPosition
-                    if(notesList[holder.adapterPosition].isSelected){
-                        notesList[holder.adapterPosition].isSelected = false
+                selectedItemPos = holder.adapterPosition
+                if((isLongPressed == 1)){
+                    if(notesList[selectedItemPos].isSelected){
+                        notesList[selectedItemPos].isSelected = false
                         selectCount -=1
                         NotesAppViewModel.selectCount.value = selectCount
-                        if(notesList[holder.adapterPosition].isPinned==1){
+                        if(notesList[selectedItemPos].isPinned==1){
                             pinnedList.remove(1)
                         }
                         else{
@@ -229,10 +290,10 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
                         }
                     }
                     else{
-                        notesList[holder.adapterPosition].isSelected = true
+                        notesList[selectedItemPos].isSelected = true
                         selectCount +=1
                         NotesAppViewModel.selectCount.value = selectCount
-                        if(notesList[holder.adapterPosition].isPinned==1){
+                        if(notesList[selectedItemPos].isPinned==1){
                             pinnedList.add(1)
                         }
                         else{
@@ -240,19 +301,16 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
                         }
                     }
                     NotesAppViewModel.setPinnedValues(pinnedList)
-                    viewModel.setSelectedNote(notesList[holder.adapterPosition])
-                }
-                else if((isLongPressed == 1) && (firstTimeLongPressed == 0)){
-                    firstTimeLongPressed = 1
+                    viewModel.setSelectedNote(notesList[selectedItemPos])
                 }
                 else{
                     val addNoteFragment = AddNote(viewModel)
                     addNoteFragment.arguments = Bundle().apply {
-                        putInt("id",notesList[holder.adapterPosition].id)
-                        putString("title",notesList[holder.adapterPosition].title)
+                        putInt("id",notesList[selectedItemPos].id)
+                        putString("title",notesList[selectedItemPos].title)
                         putString("date",dateInfo)
-                        putInt("isPinned",notesList[holder.adapterPosition].isPinned)
-                        putString("content",notesList[holder.adapterPosition].content)
+                        putInt("isPinned",notesList[selectedItemPos].isPinned)
+                        putString("content",notesList[selectedItemPos].content)
                     }
                     (context as FragmentActivity).supportFragmentManager.beginTransaction()
                         .replace(R.id.fragmentContainerView,addNoteFragment)
@@ -264,10 +322,24 @@ class NotesAdapter(private val viewModel: NotesAppViewModel):RecyclerView.Adapte
     }
 
     fun setNotes(notes:MutableList<Note>){
+        println("SET NOTES CALLED")
+        isHighlight = false
         val diffUtil = NotesDiffUtil(notesList,notes)
         val diffResults = DiffUtil.calculateDiff(diffUtil)
         notesList = notes
         diffResults.dispatchUpdatesTo(this)
+        notifyDataSetChanged()
+    }
+
+    fun setNotesQuery(notes:MutableList<Note>,query1: String){
+        println("SET QUERY NOTES CALLED")
+        query = query1
+        isHighlight = true
+        val diffUtil = NotesDiffUtil(notesList,notes)
+        val diffResults = DiffUtil.calculateDiff(diffUtil)
+        notesList = notes
+        diffResults.dispatchUpdatesTo(this)
+        notifyDataSetChanged()
     }
 
      fun onBackPressed() {

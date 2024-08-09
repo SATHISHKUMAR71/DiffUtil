@@ -22,3 +22,4 @@ class NotesDiffUtil(
         return oldList[oldItemPosition] == newList[newItemPosition]
         }
     }
+
